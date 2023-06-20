@@ -37,7 +37,7 @@ export default {
                 this.activated = true;
             this.$emit('waschanged', { value: event.target.value,
             valid:this.pattern != null ? 
-            this.pattern.test(this.value) :
+            this.pattern.test(event.target.value) :
             event.target.value != ''});
         }
     }
