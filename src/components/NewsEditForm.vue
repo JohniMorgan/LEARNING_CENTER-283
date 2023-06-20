@@ -62,7 +62,6 @@ export default {
                 }).catch(error => {
                     console.log(error);
                 })
-           // this.uploadedFile = event.target.;
         },
         onUploadFile(event) {
             console.log(event.value);

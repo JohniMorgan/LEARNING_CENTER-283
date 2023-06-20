@@ -2,7 +2,11 @@
     <div class="back">
         <form class="registration-form"
             @submit.prevent = "sendForm">
+            <span class="return-btn" @click="$router.push('/')"></span>
             <label style="align-self: center;">Авторизация</label>
+            <label class="error-msg" v-if="isErrored">
+                {{ errMsg }}
+            </label>
             <FormInput v-for="(el, key) in info" :key="key"
                 :title="el.name"
                 :value="el.value"
@@ -47,6 +51,7 @@ export default {
         }],
             valid: [],
             sended: false,
+            errMsg: '',
     }
 },
     created() {
@@ -63,16 +68,24 @@ export default {
             }
             return active
         },
+        isErrored() {
+            return this.errMsg != '';
+        },
     },
     methods: {
         changeValues(index, inField) {
             this.info[index].value = inField.value;
             this.valid[index] = inField.valid;
+            this.errMsg='';
         },
         sendForm() {
             this.user.userAutorize({
                 email: this.info[0].value,
                 word: this.info[1].value,
+            }).catch(e => {
+                this.errMsg = e.message;
+                this.info[1].value = '';
+                this.valid[1] = false;
             })
         },
     }
@@ -100,5 +113,21 @@ export default {
     .btn {
         width: 130px;
         align-self:flex-end;
+    }
+    .return-btn {
+        width: 25px;
+        height: 25px;
+        border: none;
+        position:relative;
+        align-self:flex-end;
+        background-color: white;
+        background-size: 100%;
+        background-image: url("@/assets/krest.svg");
+        background-position: center;
+        cursor: pointer;
+    }
+    .error-msg {
+        color:red;
+        font-size:small;
     }
 </style>

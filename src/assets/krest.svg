@@ -1,0 +1,6 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 200 200" enable-background="new 0 0 200 200" xml:space="preserve">
+  <g>
+    <path d="M 30 30 L 170 170" stroke="#006bb3" stroke-width="20"></path>
+    <path d="M 170 30 L 30 170" stroke="#006bb3" stroke-width="20"></path>
+  </g>
+</svg>

@@ -2,6 +2,7 @@
 <div class="back">
     <form class="registration-form"
         @submit.prevent = "sendForm">
+        <span class="return-btn" @click="$router.push('/')"></span>
         <label style="align-self: center;">Регистрация</label>
         <label class="error-msg" v-if="isErrored">
             {{ errMsg }}</label>
@@ -131,5 +132,17 @@ export default {
     .error-msg {
         color:red;
         font-size:small;
+    }
+    .return-btn {
+        width: 25px;
+        height: 25px;
+        border: none;
+        position:relative;
+        align-self:flex-end;
+        background-color: white;
+        background-size: 100%;
+        background-image: url("@/assets/krest.svg");
+        background-position: center;
+        cursor: pointer;
     }
 </style>

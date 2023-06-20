@@ -81,7 +81,12 @@ export const useUserStore = defineStore('user', {
     },
     userAutorize(form) {
         const auth = useSecurityStore();
-            let token = auth.getToken;
+        let token = auth.getToken;
+        return new Promise((resolve, reject) => {
+            let err = {
+                is: false,
+                message: '',
+            }
             connector
                 .post("/users/login", {
                     "email" : form.email,
@@ -98,7 +103,16 @@ export const useUserStore = defineStore('user', {
                         console.log("pushed into main");
                         Router.push('/');
                     })})
-                .catch(error => (console.log(error)));    
+                .catch(error => {
+                    err.is = true;
+                    if (error.response.data.info=="Wrong password") {
+                        err.message = "Неверное имя пользователя или пароль"
+                    } else {
+                        err.message = "Сбой связи с сервером, пожалуйста, попробуйте позже"
+                    }
+                    reject(err);
+                });
+        })    
     }
 }
 })
