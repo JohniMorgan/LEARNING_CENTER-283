@@ -72,6 +72,7 @@ export default {
             this.overflawStyle = "height: auto";
         },
         clickLike() {
+            console.log('like');
             this.posts.likePost(this.post.id);
             this.$emit('liked', {value: this.post.id});
         },

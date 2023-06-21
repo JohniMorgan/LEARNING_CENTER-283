@@ -63,22 +63,24 @@ export default {
             }).catch(er => console.log(er));
         },
         getComments() {
-            api.get('comments/getComments/0/2/' + this.postId,
+            api.get('comments/getComments/0/3/' + this.postId,
             {headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}})
             .then(res => {
+                console.log(res.data)
                 for (let i = 0; i < res.data.length-1; i++) {
-                    const com = res.data[i];
-                    api.get(`users/getInfo/${com.user_id}`, {
+                    this.comments.push({
+                            comment: res.data[i].comment,
+                            date: this.posts.convertDate(res.data[i].date),
+                            author: ''
+                        });
+                    api.get(`users/getInfo/${res.data[i].user_id}`, {
                         headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}
                     }).then(info => {
-                        this.comments.push({
-                            comment: com.comment,
-                            date: this.posts.convertDate(com.date),
-                            author: info.data.name + " "+ info.data.surname[0] + "."
-                        })
+                        this.comments[i].author = info.data.name + " "+ info.data.surname[0] + "."
                     }).catch(er => console.log(er));
                 }
             }).catch(e => console.log(e.response));
+            
         }
     }
 }
@@ -109,5 +111,6 @@ export default {
     .comment {
         display: flex;
         flex-direction: column;
+        word-break: break-all;
     }
 </style>

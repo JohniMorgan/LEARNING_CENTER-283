@@ -2,6 +2,7 @@ import Registration from '../components/Registration.vue'
 import Main from '../components/NewsPaper.vue'
 import Autorization from '../components/AutorizeForm.vue'
 import Edit from "../components/NewsEditForm.vue"
+import TextToLink from '@/components/GPT-Laborathory/TextAreaToLink.vue'
 import {createRouter, createWebHistory} from 'vue-router'
 
 const routes = [
@@ -24,6 +25,10 @@ const routes = [
         path: '/edit',
         name: 'Edit',
         component: Edit
+    },
+    {
+        path: '/lab/texttolink',
+        component: TextToLink
     }
 
 ];

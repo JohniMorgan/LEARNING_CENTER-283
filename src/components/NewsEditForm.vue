@@ -12,7 +12,8 @@
         </div>
         <div class="row mb-3">
             <label class="form-label row mb-3"><span><h5>Текст статьи</h5></span></label>
-            <textarea class="form-control col-12" rows="16" v-model="text"></textarea>
+            <textarea class="form-control col-12" rows="16" @input="onTextInput"
+            @mouseup="onSelectedText"></textarea>
         </div>
         <button class="btn btn-primary">Загрузить</button>
         </form>
@@ -58,7 +59,7 @@ export default {
                     "text" : this.text,
                     "imagePath" : response.data.path
                 }, {headers: {'Authorization': `${token.type} ${token.accessToken}`}}
-                    ).then(response_add => console.log(response_add)).catch(e => console.log(e))
+                    ).then(() => this.$router.push('/')).catch(e => console.log(e))
                 }).catch(error => {
                     console.log(error);
                 })
@@ -67,6 +68,15 @@ export default {
             console.log(event.value);
             this.uploadedFile = event.value;
             console.log(this.uploadedFile);
+        },
+        onTextInput(event) {
+            this.text = event.target.value;
+            event.target.style.height = "5px";
+            event.target.style.height = (event.target.scrollHeight) + "px";
+        },
+        onSelectedText(event) {
+            event;
+            console.log('@mouseup');
         }
     }
 }
