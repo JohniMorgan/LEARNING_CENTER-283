@@ -52,7 +52,7 @@ export default {
                 console.log("Конец страницы");
                 this.posts.requestPosts({
                     from: this.posts.next,
-                    many: 1,
+                    many: (this.posts.howMany > 3) ? 3 : this.posts.howMany,
                     who: this.user.userID,
                 })
             }

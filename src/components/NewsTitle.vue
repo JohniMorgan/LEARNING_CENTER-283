@@ -20,7 +20,7 @@
     </table>
 </div>
 </div>
-<CommentsArea v-if="visibleComm" :postId="post.id"/>
+<CommentsArea v-if="visibleComm" :postId="post.id" :count="howMuchComments" @key="howMuchComments"/>
 </div>
 </template>
 

@@ -7,6 +7,7 @@
             </div>
             {{ com.comment }}
         </div>
+        <button class="more-btn" @click="getComments" v-if="cnt">Ещё комментарии</button>
         <div class="comment-edit" v-if="user.isAuthorized">
             <label class="form-label "><span><h6>{{ user.getName }}</h6></span></label>
             <div class="row">
@@ -26,7 +27,7 @@ import { useUserStore } from "@/store/modules/user";
 import { usePostsStore } from "@/store/modules/posts"
 
 export default {
-    props: ['postId'],
+    props: ['postId', 'count'],
     setup() {
         const user = useUserStore();
         const auth = useSecurityStore();
@@ -36,9 +37,11 @@ export default {
     data() { return {
         comments: [],
         cnt: 0,
+        offset: 0,
         newComment: '',
     }},
     beforeMount() {
+        this.cnt = this.count;
         this.getComments();
     },
     methods: {
@@ -63,10 +66,12 @@ export default {
             }).catch(er => console.log(er));
         },
         getComments() {
-            api.get('comments/getComments/0/3/' + this.postId,
+            api.get(`comments/getComments/${this.offset}/${this.cnt > 3 ? 3 : this.cnt}/` + this.postId,
             {headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}})
             .then(res => {
-                console.log(res.data)
+                let local_offset = this.comments.length;
+                this.cnt -= res.data.length-1;
+                this.offset = res.data[res.data.length-1].idForNext;
                 for (let i = 0; i < res.data.length-1; i++) {
                     this.comments.push({
                             comment: res.data[i].comment,
@@ -76,10 +81,10 @@ export default {
                     api.get(`users/getInfo/${res.data[i].user_id}`, {
                         headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}
                     }).then(info => {
-                        this.comments[i].author = info.data.name + " "+ info.data.surname[0] + "."
+                        this.comments[local_offset + i].author = info.data.name + " "+ info.data.surname[0] + "."
                     }).catch(er => console.log(er));
                 }
-            }).catch(e => console.log(e.response));
+            }).catch(e => console.log(e));
             
         }
     }

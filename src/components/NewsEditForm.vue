@@ -1,5 +1,6 @@
 <template>
     <div class="main-area">
+        <router-link to="/" class="link-btn">На главную</router-link>
         <form class="upload-container"
         @submit.prevent="onNewsUpload">
         <div class="row mb-3">
@@ -109,5 +110,12 @@ export default {
         z-index:10;
         justify-content: center;
         flex-direction: column;
+    }
+    .link-btn {
+        align-self: flex-end;
+        background-color: white;
+        color:blue;
+        border: none;
+        text-decoration: none;
     }
 </style>
