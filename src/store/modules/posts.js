@@ -7,6 +7,7 @@ import { useUserStore } from "./user";
 export const usePostsStore = defineStore('posts', {
     state: () => ({
         posts: [],
+        howMany: 0,
         next: 0,
     }),
     getters: {
@@ -20,34 +21,37 @@ export const usePostsStore = defineStore('posts', {
     },
     actions: {
         requestPosts(params) {
-            console.log("Запрос постов");
-            const auth = useSecurityStore();
-            const token = auth.getToken;
-            connector.get(`/posts/getPosts/${params.from}/${params.many}/${params.who ? params.who : -1}`, {
-                headers: {'Authorization': `${token.type} ${token.accessToken}`},
-            }).then(response => {
-                console.log(response);
-                for (let i = 0; i < response.data.length - 1; i++) {
-                    let p = response.data[i];
-                    if (p.pathToPhoto)
-                    this.getImage(p.pathToPhoto).then(photo => {
-                        p.img = photo;
+            if (this.next != null) {
+                const auth = useSecurityStore();
+                const token = auth.getToken;
+                connector.get(`/posts/getPosts/${params.from}/${params.many}/${params.who ? params.who : -1}`, {
+                    headers: {'Authorization': `${token.type} ${token.accessToken}`},
+                }).then(response => {
+                    this.howMany -= params.many;
+                    console.log(response);
+                    let offset = this.posts.length;
+                    for (let i = 0; i < response.data.length - 1; i++) {
+                        let p = response.data[i];
                         this.posts.push({
-                            id: p.id,
-                            date: `Опубликовано ${this.convertDate(p.date)}`,
-                            likes: p.likes,
-                            title: p.title,
-                            img: p.img,
-                            text: p.text,
-                            isLiked: p.isLiked
-                        })
-                    }).catch(e => {console.log(e);
-                        console.log("Неудачный запрос постов");    
-                    });
-                }
-                this.next = response.data[response.data.length - 1].idForNext;
-            })
-            .catch(e => console.log(e));
+                                id: p.id,
+                                date: `Опубликовано ${this.convertDate(p.date)}`,
+                                likes: p.likes,
+                                title: p.title,
+                                img: '',
+                                text: p.text,
+                                isLiked: p.isLiked
+                            });
+                        if (p.pathToPhoto)
+                        this.getImage(p.pathToPhoto).then(photo => {
+                            this.posts[offset + i].img = photo
+                        }).catch(e => {console.log(e);
+                            console.log("Неудачный запрос постов");    
+                        });
+                    }
+                    this.next = response.data[response.data.length - 1].idForNext;
+                })
+                .catch(e => console.log(e));
+        }
         },
         getImage(imgPath) {
             return new Promise((resolve, reject) => {
@@ -85,6 +89,17 @@ export const usePostsStore = defineStore('posts', {
         convertDate(date) {
             let ru_date = `${date.slice(8, 10)}.${date.slice(5, 7)}.${date.slice(0, 4)} ${Number(date.slice(11, 13)) + 3}${date.slice(13, 16)}`;
             return ru_date;
+        },
+        requestHowMany() {
+            return new Promise((resolve, reject) => {
+                const auth = useSecurityStore();
+                connector.get('/posts/howMany', {
+                    headers : {'Authorization' : `${auth.getToken.type} ${auth.getToken.accessToken}`} 
+                }).then(res => {
+                    this.howMany = res.data.size;
+                    resolve(res.data.size);
+                }).catch(err => console.log(reject(err)));
+            })
         }
     }    
 })
