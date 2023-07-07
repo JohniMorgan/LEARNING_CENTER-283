@@ -2,9 +2,10 @@
     <div class="main-area">
         <router-link to="/" class="link-btn">На главную</router-link>
         <form class="upload-container"
-        @submit.prevent="onNewsUpload">
+        @submit.prevent="chooseOption">
         <div class="row mb-3">
             <FileUploader class="col-md-4"
+            :imageSrc="$route.params.image"
             @uploadedImg="onUploadFile"/>
             <div class="col-md-8">
                 <label class="form-label row mb-3"><span><h3>Заголовок статьи</h3></span></label>
@@ -17,7 +18,7 @@
              v-show="!previev"></textarea>
             <p v-if="previev" @mouseup="onSelectedText" width="200" v-html="text"></p>
         </div>
-        <!--<button class="btn btn-primary">Загрузить</button>-->
+        <button class="btn btn-primary">Загрузить</button>
         </form>
         <button class="btn btn-primary" @click="previev = !previev">Предпросмотр</button>
     </div>
@@ -43,10 +44,25 @@ export default {
             title: null,
             text: null,
             previev: false,
-            areaSize: '5px'
+            areaSize: '5px',
+            isEdit: false
+        }
+    },
+    beforeMount() {
+        if (this.$route.params.id) {
+            this.isEdit = true
+            this.title = this.$route.params.title;
+            this.text = this.$route.params.text;
+            this.uploadedFile = this.$route.params.image;
         }
     },
     methods: {
+        chooseOption() {
+            this.isEdit ? this.onNewsUpdated() : this.onNewsUpload();
+        },
+        /*onNewsUpdated() {
+            tokenlet 
+        },*/
         onNewsUpload() {
             let token = this.auth.getToken;
             let data = new FormData();
@@ -71,9 +87,7 @@ export default {
                 })
         },
         onUploadFile(event) {
-            console.log(event.value);
             this.uploadedFile = event.value;
-            console.log(this.uploadedFile);
         },
         onTextInput(event) {
             this.text = event.target.value;
@@ -127,5 +141,8 @@ export default {
         color:blue;
         border: none;
         text-decoration: none;
+    }
+    .previev {
+        white-space: pre-wrap;
     }
 </style>
