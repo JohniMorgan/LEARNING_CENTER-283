@@ -35,7 +35,6 @@ export const useSecurityStore = defineStore('security', {
                     console.log("Результат запроса количества постов");
                     console.log(res);
                     posts.requestPosts({
-                        from: 0,
                         many: (res > 3) ? 3 : posts.howMany,
                         who: user.getId,
                     })

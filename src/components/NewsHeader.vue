@@ -2,7 +2,7 @@
     <div class="header">
         <router-link to="/autorization" v-if="!Active">Войти</router-link>
         <div v-else>
-        <router-link to="/edit">Добавить статью</router-link>
+        <router-link to="/edit" v-if="user.isAdmin">Добавить статью</router-link>
         <label>{{ userName }}</label>
         <button class="exit-btn"
             @click="leaveSite">Выйти</button>

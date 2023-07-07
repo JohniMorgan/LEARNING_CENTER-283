@@ -2,7 +2,6 @@ import connector from "@/confaxios";
 import { defineStore} from 'pinia';
 import { useSecurityStore } from "./security";
 import { useUserStore } from "./user";
-//import router from "@/routes/router";
 
 export const usePostsStore = defineStore('posts', {
     state: () => ({
@@ -24,7 +23,7 @@ export const usePostsStore = defineStore('posts', {
             if (this.next != null) {
                 const auth = useSecurityStore();
                 const token = auth.getToken;
-                connector.get(`/posts/getPosts/${params.from}/${params.many}/${params.who ? params.who : -1}`, {
+                connector.get(`/posts/getPosts/${this.next}/${params.many}/${params.who ? params.who : -1}`, {
                     headers: {'Authorization': `${token.type} ${token.accessToken}`},
                 }).then(response => {
                     this.howMany -= params.many;
@@ -99,6 +98,22 @@ export const usePostsStore = defineStore('posts', {
                     this.howMany = res.data.size;
                     resolve(res.data.size);
                 }).catch(err => console.log(reject(err)));
+            })
+        },
+        requestDelete(id) {
+            return new Promise((resolve, reject) => {
+                const auth = useSecurityStore();
+                console.log('request delete ' + id);
+                connector.delete('/posts/deletePost/' + id, {
+                    headers : {'Authorization' : `${auth.getToken.type} ${auth.getToken.accessToken}`}
+                }).then(() => {
+                    resolve("Удаление произошло успешно");
+                }).catch(err => {
+                    reject({
+                        msg: "Что-то пошло не так, попробуйте позже",
+                        error: err
+                    });
+                })
             })
         }
     }    

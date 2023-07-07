@@ -4,6 +4,7 @@
     <NewsTitle v-for="(post, index) in allPosts" :key="index"
         :post="post"
         @liked="likePost"
+        @delete="deletePost"
     />
 </div>
 </template>
@@ -56,17 +57,25 @@ export default {
                     who: this.user.userID,
                 })
             }
+        },
+        deletePost(event) {
+            console.log("delete post id:" + event.value);
+            this.posts.requestDelete(event.value).then(() => {
+                this.$router.go(0);
+            }).catch(err => console.log(err.error));
         }
     },
     beforeMount() {
         this.posts.$reset();
     },
     mounted() {
+        this.posts.requestHowMany().then(() => {
         this.posts.requestPosts({
             many: 3,
             from: 0,
             who: this.user.userId,
         })
+    }).catch(er => {er});
         window.addEventListener('scroll', this.handleScroll);
     },
     beforeUnmount() {

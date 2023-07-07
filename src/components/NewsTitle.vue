@@ -1,26 +1,37 @@
 <template>
 <div class="news">
-<div class="news-container" :style="overflawStyle">
-<p class="news-text" ref="newstext">
-<img :src="post.img" class="img-container" :style="imgSize"/>
-<span><h3>{{post.title}}</h3>{{ post.text }}</span>
-</p>
-<div class="toolbar">
-    <table>
-    <td><label>{{ post.date }}</label></td>
-    <td><button class="functional-btn"
-            v-show="!visibleComm"
-            @click="clickComments">
-            Комментарии({{ howMuchComments }})</button></td>
-    <td><button class="functional-btn"
-            @click="clickLike"
-            :disabled="isDisabledLike">{{`${likeIcon}(${post.likes})`}}</button></td>
-    <td width="150px"><button v-show="isOverflowed" class="functional-btn"
-        @click = "ShowMore" >Показать больше</button></td>
-    </table>
-</div>
-</div>
+    <div class="news-container" :style="overflawStyle">
+        <p class="news-text" ref="newstext">
+            <img :src="post.img" class="img-container" :style="imgSize"/>
+            <span><h3>{{post.title}}</h3></span>
+            <span>{{ post.text }}</span>
+        </p>
+        <div class="toolbar">
+            <button v-if="userStore.isAdmin" class="del-btn"
+            @click="openModal">Удалить</button>
+            <label>{{ post.date }}</label>
+            <button class="functional-btn"
+                    v-show="!visibleComm"
+                    @click="clickComments">
+                    Комментарии({{ howMuchComments }})</button>
+            <button class="functional-btn"
+                    @click="clickLike"
+                    :disabled="isDisabledLike">{{`${likeIcon}(${post.likes})`}}</button>
+            <button v-show="isOverflowed" class="functional-btn"
+                @click = "ShowMore" >Показать больше</button>
+
+        </div>
+    </div>
 <CommentsArea v-if="visibleComm" :postId="post.id" :count="howMuchComments" @key="howMuchComments"/>
+<Modal :open="isModal" @close="closeModal">
+    <h4>Вы уверены что хотите удалить этот пост?</h4>
+    <p>Отменить это действие будет невозможно</p>
+    <p><b>{{ post.title }}</b></p>
+    <div>
+        <button @click="closeModal">Отменить</button>
+        <button @click="accept">Подтвердить</button>
+    </div>
+</Modal>
 </div>
 </template>
 
@@ -30,11 +41,13 @@ import { useUserStore } from '@/store/modules/user';
 import api from "@/confaxios";
 import { useSecurityStore } from '@/store/modules/security';
 import CommentsArea  from '@/components/CommentsArea.vue'
+import Modal from '@/components/Paper/ModalAskDeletePost.vue';
 
 
 export default {
     components: {
-        CommentsArea
+        CommentsArea,
+        Modal
     },
     props: ['post'],
     setup() {
@@ -48,7 +61,8 @@ export default {
         overflawStyle: "height: 32vh",
         imgSize: "height: ",
         howMuchComments: 0,
-        visibleComm: false
+        visibleComm: false,
+        isModal: false,
     }
     },
     mounted() {
@@ -78,6 +92,18 @@ export default {
         },
         clickComments() {
             this.visibleComm = true;
+        },
+        openModal() {
+            console.log('open');
+            this.isModal = true;
+        },
+        closeModal() {
+            this.isModal = false;
+        },
+        accept() {
+            this.$emit('delete', {
+                value: this.post.id
+            });
         }
     }
 }
@@ -109,10 +135,14 @@ export default {
         margin-bottom: 0;
     }
     .toolbar {
+        width:100%;
         flex-direction: row;
-        align-self: flex-end;
         display: flex;
         justify-content: flex-end;
+        align-items: center;
+    }
+    .toolbar > * {
+        margin-left: 5px;
     }
     .functional-btn {
         width: auto;
@@ -120,5 +150,14 @@ export default {
         border: 0;
         color:#0e5eb3;
         background-color: white;
+    }
+    .del-btn {
+        width: auto;
+        border: none;
+        font-size: 18px;
+        color: rgb(206, 11, 11);
+        background-color: white;
+        justify-self: flex-end;
+        align-self:flex-end;
     }
 </style>

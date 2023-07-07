@@ -15,7 +15,7 @@
             <label class="form-label row mb-3"><span><h5>Текст статьи</h5></span></label>
             <textarea class="form-control col-12" @input="onTextInput" :value="text" :style="'height:'+areaSize"
              v-show="!previev"></textarea>
-            <p v-if="previev" @mouseup="onSelectedText" width="200"> {{ text }}</p>
+            <p v-if="previev" @mouseup="onSelectedText" width="200" v-html="text"></p>
         </div>
         <!--<button class="btn btn-primary">Загрузить</button>-->
         </form>
@@ -82,9 +82,12 @@ export default {
             this.areaSize = (event.target.scrollHeight) + "px";
             event.target.style.height = this.areaSize;
         },
-        onSelectedText(event) {
-            
-            console.log('@mouseup');
+        onSelectedText() {
+           /* console.log(window.getSelection());
+            const range = window.getSelection().getRangeAt(0);
+            this.text = this.text.slice(0, range.startOffset) + "<b>" 
+                + window.getSelection().toString() + "</b>" + this.text.slice(range.endOffset, this.text.lenght);
+            console.log('@mouseup');*/
         }
     }
 }

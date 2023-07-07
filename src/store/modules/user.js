@@ -10,6 +10,7 @@ export const useUserStore = defineStore('user', {
         userId: null,
         username: null,
         useremail: '',
+        isAdmin: false,
     }),
     getters: {
         getId: state => {
@@ -37,6 +38,7 @@ export const useUserStore = defineStore('user', {
             this.userId = data.id;
             this.username = data.surname[0] + ". " + data.name;
             this.useremail = data.email;
+            this.isAdmin = data.isAdmin;
         },
     userRegistration(form) {
         return new Promise((resolve, reject) => { 

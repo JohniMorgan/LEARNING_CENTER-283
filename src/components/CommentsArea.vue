@@ -116,6 +116,6 @@ export default {
     .comment {
         display: flex;
         flex-direction: column;
-        word-break: break-all;
+        word-break: break-word;
     }
 </style>
