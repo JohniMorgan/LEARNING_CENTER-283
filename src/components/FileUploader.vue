@@ -12,22 +12,27 @@
 
 <script>
 export default {
-    //props: ["imageSrc"],
+    props: ["imageSrc"],
     data() {
        return {
-            image: null
+            image: null,
+            reader: ''
        } 
+    },
+    beforeMount() {
+        this.reader = new FileReader;
+        this.reader.onload = (e) => {
+                    this.image = e.target.result;
+                }
+        if (this.imageSrc) {
+            this.image = this.imageSrc;
+        }
     },
     methods: {
         showPreview(event) {
             let input = event.target;
-            //console.log(event.target.files[0])
             if(input.files && input.files[0]) {
-                let reader = new FileReader;
-                reader.onload = (e) => {
-                    this.image = e.target.result;
-                }
-                reader.readAsDataURL(input.files[0]);
+                this.reader.readAsDataURL(input.files[0]);
                 this.$emit('uploadedImg', {
                     value: input.files[0]
                 })

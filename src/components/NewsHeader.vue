@@ -1,13 +1,13 @@
 <template>
-    <div class="header">
-        <router-link to="/autorization" v-if="!Active">Войти</router-link>
+    <header class="header">
+        <router-link to="/autorization" v-if="!Active" class="link-btn">Войти</router-link>
         <div v-else>
-        <router-link to="/edit" v-if="user.isAdmin">Добавить статью</router-link>
+        <router-link to="/edit" v-if="user.isAdmin" class="link-btn">Добавить статью</router-link>
         <label>{{ userName }}</label>
         <button class="exit-btn"
             @click="leaveSite">Выйти</button>
         </div>
-    </div>
+    </header>
     <hr>
 </template>
 
@@ -31,10 +31,8 @@ export default {
     },
     methods: {
         leaveSite() {
-            this.user.username = null;
-            this.user.userId = null;
-            this.user.useremail = '';
             this.$router.go(0);
+            this.user.$reset();
         }
     },
 }

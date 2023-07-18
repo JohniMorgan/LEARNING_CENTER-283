@@ -17,7 +17,7 @@
             <button class="btn btn-primary" :disabled="!bttnIsActive">
                 Войти
             </button>
-            <router-link to="/registration">Ещё нет аккаунта? Зарегистрируйтесь</router-link>
+            <router-link to="/registration" class="link-btn">Ещё нет аккаунта? Зарегистрируйтесь</router-link>
         </form>
     </div>
 </template>

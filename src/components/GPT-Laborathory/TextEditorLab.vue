@@ -1,47 +1,57 @@
 <template>
-    <div>
-      <p ref="paragraph" @mouseup="handleMouseUp">
-        This is some sample text.
-      </p>
-      <button @click="getSelectionRange">Get Selection Range</button>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    methods: {
-      handleMouseUp() {
-        this.saveSelectionRange();
-      },
-      saveSelectionRange() {
-        const paragraph = this.$refs.paragraph;
-        const selection = window.getSelection();
-        const range = selection.getRangeAt(0);
-  
-        const startRange = document.createRange();
-        startRange.setStart(paragraph, 0);
-        startRange.setEnd(range.startContainer, range.startOffset);
-  
-        const endRange = document.createRange();
-        endRange.setStart(paragraph, 0);
-        endRange.setEnd(range.endContainer, range.endOffset);
-  
-        this.selectionStart = startRange.toString().length;
-        this.selectionEnd = endRange.toString().length;
-      },
-      getSelectionRange() {
-        console.log('Selection Start:', this.selectionStart);
-        console.log('Selection End:', this.selectionEnd);
-      },
-    },
-    data() {
-      return {
-        selectionStart: 0,
-        selectionEnd: 0,
-      };
-    },
-  };
-  </script>
+  <div ref="container" class="container">
+    {{ truncatedText }}
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      originalText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      truncatedText: ''
+    };
+  },
+  mounted() {
+    this.truncateText();
+    window.addEventListener('resize', this.truncateText);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.truncateText);
+  },
+  methods: {
+    truncateText() {
+      const container = this.$refs.container;
+      const containerHeight = container.clientHeight;
+      const lineHeight = parseFloat(getComputedStyle(container).lineHeight);
+      const lines = Math.floor(containerHeight / lineHeight);
+
+      let truncatedText = this.originalText;
+
+      if (lines < container.scrollHeight / lineHeight) {
+        const words = this.originalText.split(' ');
+
+        while (lines < container.scrollHeight / lineHeight && words.length > 1) {
+          words.pop();
+          container.textContent = words.join(' ');
+        }
+
+        truncatedText = words.join(' ');
+      }
+
+      this.truncatedText = truncatedText;
+    }
+  }
+};
+</script>
+
+<style>
+.container {
+  width: 200px; /* Ширина контейнера */
+  overflow: hidden; /* Скрытие содержимого, выходящего за границы контейнера */
+}
+</style>
+
   
   
   

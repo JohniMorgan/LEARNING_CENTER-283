@@ -1,7 +1,7 @@
 import connector from '@/confaxios';
 import Router from '@/routes/router';
 import { useSecurityStore } from './security';
-//import { usePostsStore } from './posts';
+
 import { defineStore } from 'pinia';
 
 
@@ -116,5 +116,8 @@ export const useUserStore = defineStore('user', {
                 });
         })    
     }
-}
+},
+persist: {
+    storage: sessionStorage,
+},
 })

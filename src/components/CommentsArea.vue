@@ -1,5 +1,5 @@
 <template>
-    <div class="comment-area">
+    <div class="comment-area" :key="rerender">
         <div class="comment" v-for="(com, index) in comments" :key="index">
             <div style="display: flex; justify-content: space-between; font-weight: 500;">
                 <label>{{ com.author }}</label>
@@ -39,6 +39,7 @@ export default {
         cnt: 0,
         offset: 0,
         newComment: '',
+        rerender: 0,
     }},
     beforeMount() {
         this.cnt = this.count;
@@ -46,7 +47,7 @@ export default {
     },
     methods: {
         onInput(el) {
-            if (el.value.length < 255) {
+            if (el.value.length < 1000) {
                 this.newComment = el.value;
                 el.style.height = "5px";
                 el.style.height = (el.scrollHeight) + "px";
@@ -58,11 +59,8 @@ export default {
                 postId: this.postId,
                 comment: this.newComment
             }, {headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}})
-            .then(res => {
-                this.newComment = '';
-                this.comments = [];
-                this.getComments();
-                console.log(res);
+            .then(() => {
+                this.$emit("new-comment");
             }).catch(er => console.log(er));
         },
         getComments() {
@@ -71,7 +69,7 @@ export default {
             .then(res => {
                 let local_offset = this.comments.length;
                 this.cnt -= res.data.length-1;
-                this.offset = res.data[res.data.length-1].idForNext;
+                this.offset = res.data[res.data.length-1].idForNext
                 for (let i = 0; i < res.data.length-1; i++) {
                     this.comments.push({
                             comment: res.data[i].comment,

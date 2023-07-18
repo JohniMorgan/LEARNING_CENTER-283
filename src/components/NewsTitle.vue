@@ -1,5 +1,5 @@
 <template>
-<div class="news">
+<article class="news">
     <div class="news-container" :style="overflawStyle">
         <p class="news-text" ref="newstext">
             <img :src="post.img" class="img-container" :style="imgSize"/>
@@ -7,8 +7,14 @@
             <span>{{ post.text }}</span>
         </p>
         <div class="toolbar">
-            <button v-if="userStore.isAdmin" class="del-btn"
-            @click="openModal">Удалить</button>
+            <div v-if="userStore.isAdmin">
+                <button class="functional-btn"
+                @click="editPost">
+                    Редактировать
+                </button>
+                <button class="del-btn"
+                @click="openModal">Удалить</button>
+            </div>
             <label>{{ post.date }}</label>
             <button class="functional-btn"
                     v-show="!visibleComm"
@@ -22,7 +28,8 @@
 
         </div>
     </div>
-<CommentsArea v-if="visibleComm" :postId="post.id" :count="howMuchComments" @key="howMuchComments"/>
+<CommentsArea v-if="visibleComm" :postId="post.id" :count="howMuchComments" :key="howMuchComments" @new-comment="howMuchComments++"/>
+<!--Модальное окно которое вызывается в случае удаления поста-->
 <Modal :open="isModal" @close="closeModal">
     <h4>Вы уверены что хотите удалить этот пост?</h4>
     <p>Отменить это действие будет невозможно</p>
@@ -32,7 +39,7 @@
         <button @click="accept">Подтвердить</button>
     </div>
 </Modal>
-</div>
+</article>
 </template>
 
 <script>
@@ -104,6 +111,15 @@ export default {
             this.$emit('delete', {
                 value: this.post.id
             });
+        },
+        editPost() {
+            console.log(this.post)
+            this.$router.push({name: 'Edit', params: {
+                id: this.post.id,
+                title: this.post.title,
+                text: this.post.text,
+                image: this.post.img
+            }});
         }
     }
 }
@@ -131,8 +147,10 @@ export default {
         height: 100%;
         overflow: hidden;
         padding: 5px;
-        text-overflow:ellipsis;
+        text-overflow:clip;
         margin-bottom: 0;
+        line-height: 1.3em;
+        white-space:pre-wrap;
     }
     .toolbar {
         width:100%;
