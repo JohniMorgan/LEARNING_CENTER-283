@@ -18,7 +18,8 @@ export default {
 </script>
 
 <style>
-router-link {
-        color: #0c43a2;
+.link-btn {
+        color: #0c40a2;
+        text-decoration: none;
     }
 </style>

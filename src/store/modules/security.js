@@ -31,11 +31,15 @@ export const useSecurityStore = defineStore('security', {
                 this.refreshToken = response.data.refreshToken;
                 const posts = usePostsStore();
                 const user = useUserStore();
-                posts.requestPosts({
-                    from: 0,
-                    many: 3,
-                    who: user.getId,
-                });
+                posts.requestHowMany().then( res => {
+                    console.log("Результат запроса количества постов");
+                    console.log(res);
+                    posts.requestPosts({
+                        many: (res > 3) ? 3 : posts.howMany,
+                        who: user.getId,
+                    })
+                }
+                ).catch(err => console.log(err));
                 this.refresh();
               })
               .catch(error => {
