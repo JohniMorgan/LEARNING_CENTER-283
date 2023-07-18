@@ -1,16 +1,16 @@
 # my-project
 
-## Project setup
+## Инициализация проекта
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Компиляция и режим "Горячей перезагрузки" для разработки
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### Компиляция и подготовка к выпуску в продакшн
 ```
 npm run build
 ```
