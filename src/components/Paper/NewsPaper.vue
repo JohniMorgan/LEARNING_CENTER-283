@@ -85,14 +85,5 @@ export default {
 </script>
 
 <style>
-    .paper {
-        display:flex;
-        flex-direction: column;
-        margin-left: 15%;
-        margin-right: 15%;
-        overflow-y:auto;
-    }
-    .paper > * {
-        margin: 10px;
-    }
+
 </style>

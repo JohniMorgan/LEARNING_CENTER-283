@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import FileUploader from "@/components/FileUploader.vue";
+import FileUploader from "./FileUploader.vue";
 
 import conector from "@/confaxios";
 import { useSecurityStore } from "@/store/modules/security";

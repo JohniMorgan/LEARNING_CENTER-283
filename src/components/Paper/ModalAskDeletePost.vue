@@ -31,8 +31,16 @@ export default {
 }
 
 .modal-content {
-  width: 30%;
+  padding:15px;
   background-color: #fff;
-  padding: 20px;
+  width: 70%;
+  font-size: 14px;
+}
+@media (min-width: 700px) {
+  .modal-content {
+    padding: 20px;
+    width: 50%;
+    max-width: 400px;
+  }
 }
 </style>

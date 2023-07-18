@@ -4,23 +4,23 @@
         <p class="news-text" ref="newstext">
             <img :src="post.img" class="img-container" :style="imgSize"/>
             <span><h3>{{post.title}}</h3></span>
-            <span>{{ post.text }}</span>
+            <span class="text">{{ post.text }}</span>
         </p>
         <div class="toolbar">
             <div v-if="userStore.isAdmin">
-                <button class="functional-btn"
+                <button class="func-btn link"
                 @click="editPost">
                     Редактировать
                 </button>
-                <button class="del-btn"
+                <button class="func-btn delete"
                 @click="openModal">Удалить</button>
             </div>
             <label>{{ post.date }}</label>
-            <button class="functional-btn"
+            <button class="func-btn link"
                     v-show="!visibleComm"
                     @click="clickComments">
                     Комментарии({{ howMuchComments }})</button>
-            <button class="functional-btn"
+            <button class="func-btn link"
                     @click="clickLike"
                     :disabled="isDisabledLike">{{`${likeIcon}(${post.likes})`}}</button>
             <button v-show="isOverflowed" class="functional-btn"
@@ -35,8 +35,8 @@
     <p>Отменить это действие будет невозможно</p>
     <p><b>{{ post.title }}</b></p>
     <div>
-        <button @click="closeModal">Отменить</button>
-        <button @click="accept">Подтвердить</button>
+        <button @click="closeModal" class="func-btn link">Отменить</button>
+        <button @click="accept" class="func-btn link">Подтвердить</button>
     </div>
 </Modal>
 </article>
@@ -47,7 +47,7 @@ import { usePostsStore } from '@/store/modules/posts';
 import { useUserStore } from '@/store/modules/user';
 import api from "@/confaxios";
 import { useSecurityStore } from '@/store/modules/security';
-import CommentsArea  from '@/components/CommentsArea.vue'
+import CommentsArea  from '@/components/Paper/CommentsArea.vue'
 import Modal from '@/components/Paper/ModalAskDeletePost.vue';
 
 
@@ -147,20 +147,21 @@ export default {
         height: 100%;
         overflow: hidden;
         padding: 5px;
-        text-overflow:clip;
         margin-bottom: 0;
-        line-height: 1.3em;
-        white-space:pre-wrap;
+        line-height: 1.3em; 
     }
     .toolbar {
         width:100%;
         flex-direction: row;
         display: flex;
-        justify-content: flex-end;
-        align-items: center;
+        justify-content:space-between;
+        align-items:center;
+        flex-wrap:wrap;
     }
-    .toolbar > * {
-        margin-left: 5px;
+    @media (min-width: 700px) {
+        .toolbar {
+            justify-content: flex-end;
+        }
     }
     .functional-btn {
         width: auto;
@@ -169,13 +170,15 @@ export default {
         color:#0e5eb3;
         background-color: white;
     }
-    .del-btn {
+    .delete {
         width: auto;
         border: none;
-        font-size: 18px;
         color: rgb(206, 11, 11);
         background-color: white;
         justify-self: flex-end;
         align-self:flex-end;
+    }
+    .delete:hover {
+        color: rgb(244, 44, 44);
     }
 </style>

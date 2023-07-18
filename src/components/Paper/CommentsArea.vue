@@ -1,23 +1,23 @@
 <template>
-    <div class="comment-area" :key="rerender">
+    <section class="comment-area" :key="rerender">
         <div class="comment" v-for="(com, index) in comments" :key="index">
-            <div style="display: flex; justify-content: space-between; font-weight: 500;">
+            {{ com.comment }}
+            <span style="display: flex; justify-content: space-between; font-weight: 500;">
                 <label>{{ com.author }}</label>
                 <label>{{ com.date }}</label>
-            </div>
-            {{ com.comment }}
+            </span>
         </div>
-        <button class="more-btn" @click="getComments" v-if="cnt">Ещё комментарии</button>
+        <button class="func-btn link" @click="getComments" v-if="cnt">Ещё комментарии</button>
         <div class="comment-edit" v-if="user.isAuthorized">
-            <label class="form-label "><span><h6>{{ user.getName }}</h6></span></label>
             <div class="row">
-            <textarea class="form-control col" :value="newComment"
-            @input="onInput($event.target)"></textarea>
-            <button class="send-btn" :disabled="newComment == ''"
-            @click="onSendedComment"></button>
+                <textarea class="form-control col" :value="newComment"
+                @input="onInput($event.target)"></textarea>
+                <button class="send-btn" :disabled="newComment == ''"
+                @click="onSendedComment"></button>
             </div>
+            <label class="form-label "><span><b>{{ user.getName }}</b></span></label>
         </div>
-    </div>
+    </section>
 </template>
 
 <script>
@@ -79,7 +79,7 @@ export default {
                     api.get(`users/getInfo/${res.data[i].user_id}`, {
                         headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}
                     }).then(info => {
-                        this.comments[local_offset + i].author = info.data.name + " "+ info.data.surname[0] + "."
+                        this.comments[local_offset + i].author = info.data.surname[0] + ". "+ info.data.name 
                     }).catch(er => console.log(er));
                 }
             }).catch(e => console.log(e));

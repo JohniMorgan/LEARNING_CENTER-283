@@ -1,7 +1,7 @@
-import Registration from '../components/Registration.vue'
-import Main from '../components/NewsPaper.vue'
-import Autorization from '../components/AutorizeForm.vue'
-import Edit from "../components/AdminInterface/NewsEditForm.vue"
+import Registration from '@/components/UserForms/Registration.vue'
+import Main from '@/components/Paper/NewsPaper.vue'
+import Autorization from '@/components/UserForms/AutorizeForm.vue'
+import Edit from "@/components/AdminInterface/NewsEditForm.vue"
 import TextToLink from '@/components/GPT-Laborathory/TextAreaToLink.vue'
 import TextEditor from "@/components/GPT-Laborathory/TextEditorLab.vue"
 
