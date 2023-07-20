@@ -1,6 +1,6 @@
 <template @scroll="console.log('scroll')">
-<header><NewsHeader/></header>
-<div class="paper" :key="posts.howMany">
+<NewsHeader/>
+<div class="paper">
     <NewsTitle v-for="(post, index) in allPosts" :key="index"
         :post="post"
         @liked="likePost"
@@ -49,7 +49,10 @@ export default {
             this.posts.posts[key].likes += (this.posts.posts[key].isLiked ? 1 : -1); 
         },
         handleScroll() {
-            if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 0.5) {
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight;
+            const clientHeight = document.documentElement.clientHeight;
+            if (scrollTop + clientHeight >= scrollHeight) {
                 console.log("Конец страницы");
                 this.posts.requestPosts({
                     from: this.posts.next,

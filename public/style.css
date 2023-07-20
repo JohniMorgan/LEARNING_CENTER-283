@@ -1,13 +1,16 @@
 html {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 16px;
+    font-size: 12px;
 }
 .link {
     color: #0e5eb3;
     text-decoration: none;
 }
 .link:hover {
-    color: #0e7fb3
+    color: #2b9dd1
+}
+.link[disabled] {
+    pointer-events: none;
 }
 .func-btn {
     width:auto;
@@ -38,5 +41,8 @@ html {
     }
     .paper > * {
         margin: 10px;
+    }
+    html {
+        font-size: 16px;
     }
 }

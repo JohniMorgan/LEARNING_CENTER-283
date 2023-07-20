@@ -33,7 +33,7 @@ export const usePostsStore = defineStore('posts', {
                         let p = response.data[i];
                         this.posts.push({
                                 id: p.id,
-                                date: `Опубликовано ${this.convertDate(p.date)}`,
+                                date: this.convertDate(p.date),
                                 likes: p.likes,
                                 title: p.title,
                                 img: '',

@@ -51,10 +51,11 @@ export default {
         width: 300px;
         aspect-ratio: calc(16/9);
         border-radius: 1px;
+        outline: 3px solid #eee;
         margin-right: 10px;
         overflow-y: hidden;
         border-radius: 1px;
-        background: #eee;
+        background: #fff;
         justify-content: center;
         align-items: center;
         display: flex;

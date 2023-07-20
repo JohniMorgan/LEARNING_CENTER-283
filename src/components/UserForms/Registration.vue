@@ -108,41 +108,4 @@ export default {
 </script>
 
 <style>
-    .back {
-        height: 100vh;
-        background-color:rgb(133, 121, 121);
-    }
-    .registration-form {
-        width: 400px;
-        background-color: white;
-        border-radius: 5%;
-        padding: 1em;
-        display:flex;
-        flex-direction: column;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        margin-right: -50%;
-        transform:translate(-50%, -50%);
-    }
-    .btn {
-        width: 130px;
-        align-self:flex-end;
-    }
-    .error-msg {
-        color:red;
-        font-size:small;
-    }
-    .return-btn {
-        width: 25px;
-        height: 25px;
-        border: none;
-        position:relative;
-        align-self:flex-end;
-        background-color: white;
-        background-size: 100%;
-        background-image: url("@/assets/krest.svg");
-        background-position: center;
-        cursor: pointer;
-    }
 </style>

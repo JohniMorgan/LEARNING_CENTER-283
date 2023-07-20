@@ -15,7 +15,7 @@
                 <button class="func-btn delete"
                 @click="openModal">Удалить</button>
             </div>
-            <label>{{ post.date }}</label>
+            <label>{{ DateOut }}</label>
             <button class="func-btn link"
                     v-show="!visibleComm"
                     @click="clickComments">
@@ -23,7 +23,7 @@
             <button class="func-btn link"
                     @click="clickLike"
                     :disabled="isDisabledLike">{{`${likeIcon}(${post.likes})`}}</button>
-            <button v-show="isOverflowed" class="functional-btn"
+            <button v-show="isOverflowed" class="func-btn link"
                 @click = "ShowMore" >Показать больше</button>
 
         </div>
@@ -66,10 +66,10 @@ export default {
     data() { return {
         isOverflowed: false,
         overflawStyle: "height: 32vh",
-        imgSize: "height: ",
         howMuchComments: 0,
         visibleComm: false,
         isModal: false,
+        imgSize: "max-height: "
     }
     },
     mounted() {
@@ -77,7 +77,7 @@ export default {
         {headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}})
         .then(res => {this.howMuchComments = res.data.size}).catch(e => console.log(e));
         this.isOverflowed = this.$refs.newstext.offsetHeight < this.$refs.newstext.scrollHeight;
-        this.imgSize += this.$refs.newstext.offsetHeight * 0.60 + "px";
+        this.imgSize += window.innerWidth >= 700 ? this.$refs.newstext.offsetHeight * 0.5 + "px;" : "100%";
     },
     computed: {
         isDisabledLike() {
@@ -85,6 +85,11 @@ export default {
         },
         likeIcon() {
             return this.post.isLiked ? "\u2665" : "\u2661";
+        },
+        DateOut() {
+            let outter = this.post.date;
+            if (window.innerWidth >= 700) outter = "Опубликованно " + outter;
+            return outter;
         }
     },
     methods: {
@@ -138,17 +143,29 @@ export default {
     }
     .img-container {
         float:left;
-        margin-right: 50px;
-        width:auto;
-        aspect-ratio: calc(16/9);
-        align-self:flex-start;
+        object-fit:contain;
+        object-position: top;
+        max-width: 40%;
+        /*height:100%;*/
+        margin-right: 20px;
+        align-self:center;
     }
     .news-text {
         height: 100%;
         overflow: hidden;
         padding: 5px;
         margin-bottom: 0;
-        line-height: 1.3em; 
+        width: 100%;
+    }
+    @media (min-width: 700px) {
+        .news {
+            flex-direction: column;
+        }
+        .img-container {
+            margin-right: 30px;
+            margin-left: 0;
+            width: 40%;
+        }
     }
     .toolbar {
         width:100%;
@@ -162,13 +179,6 @@ export default {
         .toolbar {
             justify-content: flex-end;
         }
-    }
-    .functional-btn {
-        width: auto;
-        height: auto;
-        border: 0;
-        color:#0e5eb3;
-        background-color: white;
     }
     .delete {
         width: auto;

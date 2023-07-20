@@ -98,20 +98,30 @@ export default {
         background-color:rgb(133, 121, 121);
     }
     .registration-form {
-        width: 400px;
-        background-color: white;
-        border-radius: 5%;
-        padding: 1em;
-        display:flex;
-        flex-direction: column;
-        position: absolute;
-        top: 50%;
+        /*Общие свойства для контейнера*/ 
+        flex-direction: column; /*Компановка элементов*/
+        position: absolute; /*Абсолютное расположение */
+        top: 50%; /*Здесь и далее сдвиг элемента в середину экрана*/
         left: 50%; 
         margin-right: -50%;
         transform:translate(-50%, -50%);
+        display:flex; /*Указание флекс-контейнера */
+        background-color: white; /* Цвет фона*/
+        border-radius: 5%;
+        padding: 1em;
+        /*Свойства специфичные для малых устройств*/
+        width: 80%;
+        height: auto;
     }
+    @media (min-width:700px) {
+    .registration-form {
+        /*При преодолении порога сделать компьютерную версию*/
+        width: 400px;
+    }
+}
     .btn {
-        width: 130px;
+        width: 40%;
+        max-width: 130px;
         align-self:flex-end;
     }
     .return-btn {
