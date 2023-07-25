@@ -1,7 +1,13 @@
 <template>
   <div class="modal" v-if="open">
     <div class="modal-content">
-      <slot></slot>
+      <h1>Вы уверены что хотите удалить?</h1>
+      <p>Отменить это действие будет невозможно</p>
+      <p class="msg"><slot></slot></p>
+      <div>
+        <button @click="close" class="func-btn link">Отменить</button>
+        <button @click="accept" class="func-btn link">Подтвердить</button>
+    </div>
     </div>
   </div>
 </template>
@@ -12,6 +18,9 @@ export default {
   methods: {
     close() {
       this.$emit('close');
+    },
+    accept() {
+      this.$emit('accept');
     }
   }
 };
@@ -29,7 +38,12 @@ export default {
   align-items: center;
   justify-content: center;
 }
-
+.msg {
+  max-height: 18px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+}
 .modal-content {
   padding:15px;
   background-color: #fff;
@@ -43,4 +57,5 @@ export default {
     max-width: 400px;
   }
 }
+
 </style>

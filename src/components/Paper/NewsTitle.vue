@@ -28,16 +28,13 @@
 
         </div>
     </div>
-<CommentsArea v-if="visibleComm" :postId="post.id" :count="howMuchComments" :key="howMuchComments" @new-comment="howMuchComments++"/>
+<CommentsArea v-if="visibleComm" :postId="post.id" 
+:count="howMuchComments"
+ :key="howMuchComments" @new-comment="howMuchComments++"
+ @delete-comment="howMuchComments--"/>
 <!--Модальное окно которое вызывается в случае удаления поста-->
-<Modal :open="isModal" @close="closeModal">
-    <h4>Вы уверены что хотите удалить этот пост?</h4>
-    <p>Отменить это действие будет невозможно</p>
-    <p><b>{{ post.title }}</b></p>
-    <div>
-        <button @click="closeModal" class="func-btn link">Отменить</button>
-        <button @click="accept" class="func-btn link">Подтвердить</button>
-    </div>
+<Modal :open="isModal" @close="closeModal" @accept="accept">
+    Пост: <b>{{ post.title }}</b>
 </Modal>
 </article>
 </template>
@@ -106,7 +103,6 @@ export default {
             this.visibleComm = true;
         },
         openModal() {
-            console.log('open');
             this.isModal = true;
         },
         closeModal() {
