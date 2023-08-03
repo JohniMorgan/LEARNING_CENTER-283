@@ -1,6 +1,7 @@
 import Registration from '@/components/UserForms/Registration.vue'
 import Main from '@/components/Paper/NewsPaper.vue'
 import Autorization from '@/components/UserForms/AutorizeForm.vue'
+import Add from "@/components/AdminInterface/NewsAddForm.vue"
 import Edit from "@/components/AdminInterface/NewsEditForm.vue"
 import TextToLink from '@/components/GPT-Laborathory/TextAreaToLink.vue'
 import TextEditor from "@/components/GPT-Laborathory/TextEditorLab.vue"
@@ -24,10 +25,15 @@ const routes = [
         component: Autorization
     },
     {
+        path: '/add',
+        name: 'Add',
+        component: Add
+    },
+    {
         path: '/edit',
-        name: 'Edit',
+        name: "Edit",
+        component: Edit,
         props: true,
-        component: Edit
     },
     {
         path: '/lab/texttolink',

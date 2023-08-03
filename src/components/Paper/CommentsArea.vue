@@ -120,8 +120,13 @@ export default {
 
 <style>
     .comment-area {
-        width: 50%;
+        width: 80%;
         align-self: center;
+    }
+    @media (min-width: 700px) {
+        .comment-area {
+            width: 50%;
+        }
     }
     textarea {
         height: 5px;
@@ -130,8 +135,8 @@ export default {
         margin-right: 10px;
     }
     .send-btn {
-        width: 40px;
-        height: 40px;
+        width: 2.5em;
+        height: 2.5em;
         border: none;
         border-radius: 50%;
         display: flex;
@@ -144,5 +149,7 @@ export default {
         display: flex;
         flex-direction: column;
         word-break: break-word;
+        margin-top: 1em;
+        margin-bottom: 1em;
     }
 </style>

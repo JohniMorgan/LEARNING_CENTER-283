@@ -1,13 +1,24 @@
 <template>
-<article class="news">
+<article class="news" ref="news">
     <div class="news-container" :style="overflawStyle">
-        <p class="news-text" ref="newstext">
-            <img :src="post.img" class="img-container" :style="imgSize"/>
-            <span><h3>{{post.title}}</h3></span>
-            <span class="text">{{ post.text }}</span>
+        <p class="news-text" :class="truncatedClass" ref="newstext">
+            <img :src="post.img" class="img-container"/>
+            <span><h1>{{post.title}}</h1></span>
+            <span class="text" ref="text">{{ post.text }}</span>
         </p>
         <div class="toolbar">
-            <div v-if="userStore.isAdmin">
+            <label>{{ DateOut }}</label>
+            <button class="func-btn link"
+                    v-show="!visibleComm"
+                    @click="clickComments"
+                    :disabled="previevMod">
+                    <span :class="littleComent">Комментарии</span>{{ ` (${howMuchComments})` }}</button>
+            <button class="func-btn link"
+                    @click="clickLike"
+                    :disabled="isDisabledLike || previevMod"><span :class="likeIcon"></span>{{` (${post.likes})`}}</button>
+            <button v-show="isOverflowed" class="func-btn link"
+                @click = "ShowMore" >Показать больше</button>
+            <div v-if="userStore.isAdmin && !previevMod">
                 <button class="func-btn link"
                 @click="editPost">
                     Редактировать
@@ -15,17 +26,6 @@
                 <button class="func-btn delete"
                 @click="openModal">Удалить</button>
             </div>
-            <label>{{ DateOut }}</label>
-            <button class="func-btn link"
-                    v-show="!visibleComm"
-                    @click="clickComments">
-                    Комментарии({{ howMuchComments }})</button>
-            <button class="func-btn link"
-                    @click="clickLike"
-                    :disabled="isDisabledLike">{{`${likeIcon}(${post.likes})`}}</button>
-            <button v-show="isOverflowed" class="func-btn link"
-                @click = "ShowMore" >Показать больше</button>
-
         </div>
     </div>
 <CommentsArea v-if="visibleComm" :postId="post.id" 
@@ -47,7 +47,6 @@ import { useSecurityStore } from '@/store/modules/security';
 import CommentsArea  from '@/components/Paper/CommentsArea.vue'
 import Modal from '@/components/Paper/ModalAskDeletePost.vue';
 
-
 export default {
     components: {
         CommentsArea,
@@ -61,32 +60,46 @@ export default {
         return {userStore, posts, auth};
     },
     data() { return {
-        isOverflowed: false,
         overflawStyle: "height: 32vh",
         howMuchComments: 0,
         visibleComm: false,
         isModal: false,
-        imgSize: "max-height: "
+        isOverflowed: false,
+        previevMod: false
     }
     },
     mounted() {
-        api.get(`/comments/howMany/${this.post.id}`,
-        {headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}})
-        .then(res => {this.howMuchComments = res.data.size}).catch(e => console.log(e));
+        if (this.post.previev != undefined) this.previevMod = this.post.previev;
+        if (!this.previevMod) {api.get(`/comments/howMany/${this.post.id}`,
+            {headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}})
+            .then(res => {this.howMuchComments = res.data.size}).catch(e => console.log(e));
+        }
         this.isOverflowed = this.$refs.newstext.offsetHeight < this.$refs.newstext.scrollHeight;
-        this.imgSize += window.innerWidth >= 700 ? this.$refs.newstext.offsetHeight * 0.5 + "px;" : "100%";
     },
+
     computed: {
         isDisabledLike() {
             return this.userStore.getId == null;
         },
         likeIcon() {
-            return this.post.isLiked ? "\u2665" : "\u2661";
+            return this.post.isLiked ? "like" : "no-like";
         },
         DateOut() {
             let outter = this.post.date;
             if (window.innerWidth >= 700) outter = "Опубликованно " + outter;
             return outter;
+        },
+        littleComent() {
+            return window.innerWidth >= 700 ? "" : "comment-icon";
+        },
+        truncatedClass() {
+            return this.isOverflowed ? "truncated" : "";
+        },
+        havePost() {
+            return this.$refs.newstext.offsetHeight + " " + this.$refs.newstext.scrollHeight;
+        },
+        needOverflaw() {
+            return this.$refs.newstext.offsetHeight < this.$refs.newstext.scrollHeight;
         }
     },
     methods: {
@@ -126,7 +139,8 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+
     .news {
         display:flex;
         flex-direction: column;
@@ -141,35 +155,52 @@ export default {
         float:left;
         object-fit:contain;
         object-position: top;
-        max-width: 40%;
-        /*height:100%;*/
+        min-height: 50%;
+        width: 40%;
         margin-right: 20px;
+        max-height: 20vh;
         align-self:center;
     }
     .news-text {
         height: 100%;
         overflow: hidden;
-        padding: 5px;
         margin-bottom: 0;
         width: 100%;
+        background: #fff;
+        position: relative;
+    }
+    .truncated .text:after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 30px;
+        background: linear-gradient(180deg, transparent, #fff 50%);
     }
     @media (min-width: 700px) {
         .news {
             flex-direction: column;
         }
         .img-container {
+            min-height: 50%;
+            max-height: 15vh;
             margin-right: 30px;
             margin-left: 0;
-            width: 40%;
+            width: 35%;
         }
     }
     .toolbar {
         width:100%;
         flex-direction: row;
         display: flex;
-        justify-content:space-between;
+        justify-content:flex-start;
         align-items:center;
         flex-wrap:wrap;
+        padding-left: 5px;
+    }
+    .toolbar > * {
+        margin-right: 10px;
     }
     @media (min-width: 700px) {
         .toolbar {
@@ -186,5 +217,14 @@ export default {
     }
     .delete:hover {
         color: rgb(244, 44, 44);
+    }
+    .like {
+        content: url("@/assets/like_heart_fill.svg");
+    }
+    .no-like {
+        content: url("@/assets/like_heart.svg");
+    }
+    .comment-icon {
+        content: url("@/assets/comments.svg");
     }
 </style>

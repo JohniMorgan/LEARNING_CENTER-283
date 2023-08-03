@@ -110,12 +110,17 @@ export default {
         border-radius: 5%;
         padding: 1em;
         /*Свойства специфичные для малых устройств*/
+        max-width:300px;
         width: 80%;
         height: auto;
+    }
+    .registration-form > * {
+        margin-bottom: 5px;
     }
     @media (min-width:700px) {
     .registration-form {
         /*При преодолении порога сделать компьютерную версию*/
+        max-width: none;
         width: 400px;
     }
 }

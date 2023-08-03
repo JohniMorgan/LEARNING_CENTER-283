@@ -2,6 +2,9 @@ html {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 12px;
 }
+h1 {
+    font-size: 19px;
+}
 .link {
     color: #0e5eb3;
     text-decoration: none;
@@ -16,11 +19,9 @@ html {
     width:auto;
     height: auto;
     border:0;
-    padding: 0;
+    padding: 1px;
     border-radius: 0;
     background-color: #fff;
-    margin-right: 10px;
-    margin-left: 10px;
 }
 .text {
     white-space:pre-wrap;
@@ -32,9 +33,13 @@ html {
     overflow-y:auto;
 }
 .paper > *{
-    margin: 5px;
+    margin: 2.5%;
 }
 @media (min-width: 700px) {
+    .func-btn {
+        margin-left: 10px;
+        margin-left: 10px;
+    }
     .paper {
         margin-left: 15%;
         margin-right: 15%;

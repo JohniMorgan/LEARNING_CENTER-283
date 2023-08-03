@@ -4,10 +4,12 @@
     <input class="form-control" :class="inputValidClass" :type="type"
     :value="value"
     @input="UserInput">
+    <label class="form-text" v-if="needHelp">{{ helpMsg }}</label>
 </div>
 </template>
 
 <script>
+
 
 export default {
     name: "FormInput",
@@ -16,6 +18,7 @@ export default {
         value: String,
         pattern: RegExp,
         type: String,
+        helpMsg: String,
     },
     data() {
         return {
@@ -29,6 +32,9 @@ export default {
             'is-invalid' :
             'is-valid'
             } else return null
+        },
+        needHelp() {
+            return this.helpMsg != null;
         }
     },
     methods: {
@@ -45,6 +51,8 @@ export default {
 
 </script>
 
-<style>
-
+<style scoped>
+   .form-text {
+        font-size: 0.7em;
+    }
 </style>
