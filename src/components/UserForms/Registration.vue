@@ -11,6 +11,7 @@
             :value="el.value"
             :pattern="el.pattern"
             :type="el.type"
+            :help-msg="el.helpMsg"
             @waschanged="changeValues(key, $event)"/>
         <br>
         <button class="btn btn-primary" :disabled="!bttnIsActive">
@@ -40,13 +41,15 @@ export default {
             name: 'Фамилия',
             value: '',
             pattern: /^[A-Z][a-z]+$/,
-            type: 'text'
+            type: 'text',
+            helpMsg: 'Фамилия, указанная латинницой'
         },
         {
             name: 'Имя',
             value: '',
             pattern: /^[A-Z][a-z]+$/,
-            type: 'text'
+            type: 'text',
+            helpMsg: 'Имя, указанное латинницей'
         },
         {
             name: 'Email',
@@ -58,7 +61,9 @@ export default {
             name: 'Пароль',
             value: '',
             pattern: /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/,
-            type: 'password'
+            type: 'password',
+            helpMsg: 'Пароль должен иметь минимум 8 символов и состоять из цифр, '+
+             'заглавных и строчных латинских букв. Пароль не должен содержать спецсимволы или иные знаки.'
         }],
             valid: [],
             errMsg: '',

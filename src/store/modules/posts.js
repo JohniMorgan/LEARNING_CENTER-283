@@ -1,4 +1,4 @@
-import connector from "@/confaxios";
+import api from "@/confaxios";
 import { defineStore} from 'pinia';
 import { useSecurityStore } from "./security";
 import { useUserStore } from "./user";
@@ -23,7 +23,7 @@ export const usePostsStore = defineStore('posts', {
             if (this.next != null) {
                 const auth = useSecurityStore();
                 const token = auth.getToken;
-                connector.get(`/posts/getPosts/${this.next}/${params.many}/${params.who ? params.who : -1}`, {
+                api.get(`/posts/getPosts/${this.next}/${params.many}/${params.who ? params.who : -1}`, {
                     headers: {'Authorization': `${token.type} ${token.accessToken}`},
                 }).then(response => {
                     this.howMany -= params.many;
@@ -36,7 +36,7 @@ export const usePostsStore = defineStore('posts', {
                                 date: this.convertDate(p.date),
                                 likes: p.likes,
                                 title: p.title,
-                                img: '',
+                                img: null,
                                 text: p.text,
                                 isLiked: p.isLiked
                             });
@@ -56,7 +56,7 @@ export const usePostsStore = defineStore('posts', {
             return new Promise((resolve, reject) => {
             const auth = useSecurityStore();
             const token = auth.getToken;
-            connector.get(`/posts/downloadImage/${imgPath}`,
+            api.get(`/posts/downloadImage/${imgPath}`,
             {headers: {'Authorization': `${token.type} ${token.accessToken}`}
             })
             .then(response => {
@@ -70,14 +70,14 @@ export const usePostsStore = defineStore('posts', {
             const auth = useSecurityStore();
             const post = this.getPostById(id); 
             if (!post.isLiked) {
-                connector.put('/posts/like', {
+                api.put('/posts/like', {
                     'post_id' : post.id,
                     'user_id' : user.getId,
                 }, {
                     headers : {'Authorization' : `${auth.getToken.type} ${auth.getToken.accessToken}`} 
                 }).then(res => console.log(res)).catch(e => console.log(e))
             } else {
-                connector.put('/posts/unlike', {
+                api.put('/posts/unlike', {
                     'post_id' : post.id,
                     'user_id' : user.getId,
                 }, {
@@ -92,7 +92,7 @@ export const usePostsStore = defineStore('posts', {
         requestHowMany() {
             return new Promise((resolve, reject) => {
                 const auth = useSecurityStore();
-                connector.get('/posts/howMany', {
+                api.get('/posts/howMany', {
                     headers : {'Authorization' : `${auth.getToken.type} ${auth.getToken.accessToken}`} 
                 }).then(res => {
                     this.howMany = res.data.size;
@@ -103,8 +103,7 @@ export const usePostsStore = defineStore('posts', {
         requestDelete(id) {
             return new Promise((resolve, reject) => {
                 const auth = useSecurityStore();
-                console.log('request delete ' + id);
-                connector.delete('/posts/deletePost/' + id, {
+                api.delete('/posts/deletePost/' + id, {
                     headers : {'Authorization' : `${auth.getToken.type} ${auth.getToken.accessToken}`}
                 }).then(() => {
                     resolve("Удаление произошло успешно");
@@ -112,6 +111,24 @@ export const usePostsStore = defineStore('posts', {
                     reject({
                         msg: "Что-то пошло не так, попробуйте позже",
                         error: err
+                    });
+                })
+            })
+        },
+        requestEdit(params) {
+            return new Promise((resolve, reject) => {
+                const auth = useSecurityStore(); 
+                api.put("/posts/editPost", {
+                    id: params.id,
+                    text: params.text,
+                },{
+                    headers : {'Authorization' : `${auth.getToken.type} ${auth.getToken.accessToken}`}
+                }).then(() => {
+                    resolve("Текст поста успешно заменён");
+                }).catch(err => {
+                    reject({
+                        msg: "Сервер отклонил запрос редактирования",
+                        error: err,
                     });
                 })
             })

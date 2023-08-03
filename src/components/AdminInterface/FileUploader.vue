@@ -44,12 +44,13 @@ export default {
 
 <style>
     .image-input {
-        display: flex;
+        width:300px;
+        margin: none;
     }
     .img-wrapper {
         flex: left;
         width: 300px;
-        aspect-ratio: calc(16/9);
+        height: 150px;
         border-radius: 1px;
         outline: 3px solid #eee;
         margin-right: 10px;
@@ -68,6 +69,9 @@ export default {
     }
     .img-input-img {
         max-width: 100%;
+        max-height: 100%;
+        object-fit:contain;
+        object-position: top;
         border-radius: 1px;
     }
     #img-input-in {
