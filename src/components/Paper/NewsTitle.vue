@@ -205,17 +205,6 @@ export default {
             justify-content: flex-end;
         }
     }
-    .delete {
-        width: auto;
-        border: none;
-        color: rgb(206, 11, 11);
-        background-color: white;
-        justify-self: flex-end;
-        align-self:flex-end;
-    }
-    .delete:hover {
-        color: rgb(244, 44, 44);
-    }
     .like {
         content: url("@/assets/like_heart_fill.svg");
     }

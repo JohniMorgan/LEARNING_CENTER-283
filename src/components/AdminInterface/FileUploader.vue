@@ -44,13 +44,16 @@ export default {
 
 <style>
     .image-input {
-        width:300px;
+        width: 80%;
+        max-width:300px;
         margin: none;
     }
     .img-wrapper {
         flex: left;
-        width: 300px;
+        width: 100%;
+        max-width: 300px;
         height: 150px;
+    
         border-radius: 1px;
         outline: 3px solid #eee;
         margin-right: 10px;

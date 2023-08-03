@@ -23,7 +23,6 @@
         </div>
         <button class="btn btn-primary">Загрузить</button>
         </form>
-        <button class="btn btn-primary" @click="previev = !previev">Предпросмотр</button>
     </div>
 </template>
 
