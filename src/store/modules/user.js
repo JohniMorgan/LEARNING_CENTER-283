@@ -48,7 +48,6 @@ export const useUserStore = defineStore('user', {
             }
             const auth = useSecurityStore()
             const token = auth.getToken;
-            console.log(token);
             connector
                 .post(`users/reg`, {
                     "name": form.first,
@@ -63,7 +62,6 @@ export const useUserStore = defineStore('user', {
                     }})
                     .then(response_login => {
                         this.setData(response_login.data)
-                        console.log("pushed into main");
                         Router.push('/');
                     })
                 })
@@ -101,8 +99,7 @@ export const useUserStore = defineStore('user', {
                         'Authorization': `${token.type} ${token.accessToken}`
                     }})
                     .then(response_login => {
-                        this.setData(response_login.data)
-                        console.log("pushed into main");
+                        this.setData(response_login.data);
                         Router.push('/');
                     })})
                 .catch(error => {

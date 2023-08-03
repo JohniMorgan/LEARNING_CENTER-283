@@ -80,7 +80,6 @@ export default {
         onTextInput(event) {
             this.text = event.target.value;
             event.target.style.height = "5px"
-            console.log(event.target.scrollHeight);
             this.areaSize = (event.target.scrollHeight) + "px";
             event.target.style.height = this.areaSize;
         },

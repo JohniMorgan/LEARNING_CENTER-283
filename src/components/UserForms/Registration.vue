@@ -80,7 +80,6 @@ export default {
             let active = true;
             for (let i = 0; i < this.info.length; i++) {
                 active = this.valid[i] && active;
-                console.log();
             }
             return active
         },
@@ -95,7 +94,6 @@ export default {
             if (index == 2) this.errMsg = '';
         },
         sendForm() {
-            console.log('sended form')
             this.user.userRegistration({
                 last: this.info[0].value,
                 first: this.info[1].value,

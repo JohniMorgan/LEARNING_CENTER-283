@@ -56,7 +56,6 @@ export default {
         },
         upgradeHeight() {
             this.$refs.text.style.height = "5px";
-            console.log(this.$refs.text);
             this.$refs.text.style.height = this.$refs.text.scrollHeight + "px";
         },
         switchShow() {

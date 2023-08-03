@@ -25,15 +25,12 @@ export const useSecurityStore = defineStore('security', {
                 "password": "12345", 
               })
               .then(response => {
-                console.log(response.data);
                 this.type = response.data.type;
                 this.accessToken = response.data.accessToken;
                 this.refreshToken = response.data.refreshToken;
                 const posts = usePostsStore();
                 const user = useUserStore();
                 posts.requestHowMany().then( res => {
-                    console.log("Результат запроса количества постов");
-                    console.log(res);
                     posts.requestPosts({
                         many: (res > 3) ? 3 : posts.howMany,
                         who: user.getId,

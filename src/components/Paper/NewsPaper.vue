@@ -1,4 +1,4 @@
-<template @scroll="console.log('scroll')">
+<template>
 <NewsHeader/>
 <div class="paper">
     <NewsTitle v-for="(post, index) in allPosts" :key="index"
@@ -53,7 +53,6 @@ export default {
             const scrollHeight = document.documentElement.scrollHeight;
             const clientHeight = document.documentElement.clientHeight;
             if (scrollTop + clientHeight >= scrollHeight) {
-                console.log("Конец страницы");
                 this.posts.requestPosts({
                     from: this.posts.next,
                     many: (this.posts.howMany > 3) ? 3 : this.posts.howMany,
@@ -62,7 +61,6 @@ export default {
             }
         },
         deletePost(event) {
-            console.log("delete post id:" + event.value);
             this.posts.requestDelete(event.value).then(() => {
                 this.$router.go(0);
             }).catch(err => console.log(err.error));

@@ -78,7 +78,6 @@ export default {
             api.get(`comments/getComments/${this.offset}/${this.cnt > 3 ? 3 : this.cnt}/` + this.postId,
             {headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}})
             .then(res => {
-                console.log(res);
                 let local_offset = this.comments.length;
                 this.cnt -= res.data.length-1;
                 this.offset = res.data[res.data.length-1].idForNext
@@ -98,7 +97,6 @@ export default {
             }).catch(e => console.log(e));
         },
         deleteComment(id) {
-            console.log("Удаление комментария с id = " + id);
            api.delete(`comments/deleteComment/${id}`,
            {headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}})
            .then(() => this.$emit("delete-comment"))

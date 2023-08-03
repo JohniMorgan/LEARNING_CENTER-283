@@ -27,7 +27,6 @@ export const usePostsStore = defineStore('posts', {
                     headers: {'Authorization': `${token.type} ${token.accessToken}`},
                 }).then(response => {
                     this.howMany -= params.many;
-                    console.log(response);
                     let offset = this.posts.length;
                     for (let i = 0; i < response.data.length - 1; i++) {
                         let p = response.data[i];
@@ -75,14 +74,14 @@ export const usePostsStore = defineStore('posts', {
                     'user_id' : user.getId,
                 }, {
                     headers : {'Authorization' : `${auth.getToken.type} ${auth.getToken.accessToken}`} 
-                }).then(res => console.log(res)).catch(e => console.log(e))
+                }).then().catch(e => console.log(e))
             } else {
                 api.put('/posts/unlike', {
                     'post_id' : post.id,
                     'user_id' : user.getId,
                 }, {
                     headers : {'Authorization' : `${auth.getToken.type} ${auth.getToken.accessToken}`} 
-                }).then(res => console.log(res)).catch(e => console.log(e))
+                }).then().catch(e => console.log(e))
             }
         },
         convertDate(date) {
