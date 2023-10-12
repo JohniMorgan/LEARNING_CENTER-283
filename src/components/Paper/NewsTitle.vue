@@ -70,8 +70,8 @@ export default {
     },
     mounted() {
         if (this.post.previev != undefined) this.previevMod = this.post.previev;
-        if (!this.previevMod) {api.get(`/comments/howMany/${this.post.id}`,
-            {headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}})
+        if (!this.previevMod) {
+            api.get(`/comments/howMany/${this.post.id}`)
             .then(res => {this.howMuchComments = res.data.size}).catch(e => console.log(e));
         }
         this.isOverflowed = this.$refs.newstext.offsetHeight < this.$refs.newstext.scrollHeight;

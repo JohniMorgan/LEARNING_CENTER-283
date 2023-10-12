@@ -69,14 +69,13 @@ export default {
                 userId: this.user.getId,
                 postId: this.postId,
                 comment: this.newComment
-            }, {headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}})
+            })
             .then(() => {
                 this.$emit("new-comment");
             }).catch(er => console.log(er));
         },
         getComments() {
-            api.get(`comments/getComments/${this.offset}/${this.cnt > 3 ? 3 : this.cnt}/` + this.postId,
-            {headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}})
+            api.get(`comments/getComments/${this.offset}/${this.cnt > 3 ? 3 : this.cnt}/` + this.postId)
             .then(res => {
                 let local_offset = this.comments.length;
                 this.cnt -= res.data.length-1;
@@ -88,17 +87,15 @@ export default {
                             date: this.posts.convertDate(res.data[i].date),
                             author: ''
                         });
-                    api.get(`users/getInfo/${res.data[i].user_id}`, {
-                        headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}
-                    }).then(info => {
+                    api.get(`users/getInfo/${res.data[i].user_id}`)
+                    .then(info => {
                         this.comments[local_offset + i].author = info.data.surname[0] + ". "+ info.data.name 
                     }).catch(er => console.log(er));
                 }
             }).catch(e => console.log(e));
         },
         deleteComment(id) {
-           api.delete(`comments/deleteComment/${id}`,
-           {headers: {'Authorization' : `${this.auth.getToken.type} ${this.auth.getToken.accessToken}`}})
+           api.delete(`comments/deleteComment/${id}`)
            .then(() => this.$emit("delete-comment"))
            .catch(() => console.log("Ошибка в удалении комментария"));
         },

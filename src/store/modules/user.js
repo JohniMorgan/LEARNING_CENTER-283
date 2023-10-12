@@ -1,4 +1,4 @@
-import connector from '@/confaxios';
+import api from '@/confaxios';
 import Router from '@/routes/router';
 import { useSecurityStore } from './security';
 
@@ -7,10 +7,10 @@ import { defineStore } from 'pinia';
 
 export const useUserStore = defineStore('user', {
     state: () => ({
-        userId: null,
-        username: null,
-        useremail: '',
-        isAdmin: false,
+        userId: null, //Число
+        username: null, //Строка
+        useremail: '', //Строка
+        isAdmin: false, //Логическое
     }),
     getters: {
         getId: state => {
@@ -46,22 +46,17 @@ export const useUserStore = defineStore('user', {
                 is: false,
                 message: '',
             }
-            const auth = useSecurityStore()
-            const token = auth.getToken;
-            connector
-                .post(`users/reg`, {
+            api.post(`users/reg`, {
                     "name": form.first,
                     "surname": form.last,
                     "email": form.email,
                     "passwordHash": form.word
-                }, {headers: {
-                'Authorization': `${token.type} ${token.accessToken}`}})
+                })
                 .then(response => {
-                    connector.get("/users/getInfo/" + response.data.id, {headers: {
-                        'Authorization': `${token.type} ${token.accessToken}`
-                    }})
+                    api.get("/users/getInfo/" + response.data.id)
                     .then(response_login => {
-                        this.setData(response_login.data)
+                        this.setData(response_login.data);
+                        resolve();
                         Router.push('/');
                     })
                 })
@@ -87,7 +82,7 @@ export const useUserStore = defineStore('user', {
                 is: false,
                 message: '',
             }
-            connector
+            api
                 .post("/users/login", {
                     "email" : form.email,
                     "password" : form.word
@@ -95,11 +90,10 @@ export const useUserStore = defineStore('user', {
                     'Authorization': `${token.type} ${token.accessToken}`
                 }})
                 .then(response => {
-                    connector.get("/users/getInfo/" + response.data.id, {headers: {
-                        'Authorization': `${token.type} ${token.accessToken}`
-                    }})
+                    api.get("/users/getInfo/" + response.data.id)
                     .then(response_login => {
                         this.setData(response_login.data);
+                        resolve();
                         Router.push('/');
                     })})
                 .catch(error => {

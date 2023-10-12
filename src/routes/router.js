@@ -1,10 +1,10 @@
-import Registration from '@/components/UserForms/Registration.vue'
-import Main from '@/components/Paper/NewsPaper.vue'
-import Autorization from '@/components/UserForms/AutorizeForm.vue'
 import Add from "@/components/AdminInterface/NewsAddForm.vue"
 import Edit from "@/components/AdminInterface/NewsEditForm.vue"
+import Main from '@/components/Paper/NewsPaper.vue'
+import Autorization from '@/components/UserForms/AutorizeForm.vue'
+import Registration from '@/components/UserForms/Registration.vue'
 
-import {createRouter, createWebHistory} from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
     {
@@ -33,8 +33,6 @@ const routes = [
         component: Edit,
         props: true,
     },
-
-
 ];
 
 export default new createRouter({

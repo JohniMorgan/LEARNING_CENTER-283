@@ -6,7 +6,7 @@
         <label style="align-self: center;">Регистрация</label>
         <label class="error-msg" v-if="isErrored">
             {{ errMsg }}</label>
-        <FormInput v-for="(el, key) in info" :key="key"
+        <form-input v-for="(el, key) in info" :key="key"
             :title="el.name"
             :value="el.value"
             :pattern="el.pattern"

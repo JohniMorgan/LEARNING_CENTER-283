@@ -6,7 +6,7 @@
         <span class="top">
             <FileUploader 
             :imageSrc="$route.params.image"
-            @uploadedImg="onUploadFile"/>
+            @uploaded-img="onUploadFile"/>
             <span>
                 <label class="form-label row mb-3"><span><h3>Заголовок статьи</h3></span></label>
                 <input type="text" class="form-control" v-model="title">
@@ -17,7 +17,7 @@
             <textarea class="form-control col-12" @input="onTextInput" :value="text" :style="'height:'+areaSize"
              v-show="!previev"></textarea>
             <p v-if="previev" 
-            @mouseup="onSelectedText" width="200" 
+            width="200" 
             v-html="text"
             class="text"></p>
         </div>
@@ -29,7 +29,7 @@
 <script>
 import FileUploader from "./FileUploader.vue";
 
-import conector from "@/confaxios";
+import api from "@/confaxios";
 import { useSecurityStore } from "@/store/modules/security";
 
 export default {
@@ -51,24 +51,21 @@ export default {
     },
     methods: {
         onNewsUpload() {
-            let token = this.auth.getToken;
             let data = new FormData();
             data.append('file', this.uploadedFile);
             let head = {
-                'Authorization': `${token.type} ${token.accessToken}`,
                 'Content-Type' : 'multipart/form-data'
             }
-            conector.post(
+            api.post(
                 '/posts/uploadImageToPost', data, {
                     headers: head
                 }).then(response => {
-            conector.post(
+            api.post(
                 '/posts/addPost', {
                     "title" : this.title,
                     "text" : this.text,
                     "imagePath" : response.data.path
-                }, {headers: {'Authorization': `${token.type} ${token.accessToken}`}}
-                    ).then(() => this.$router.push('/')).catch(e => console.log(e))
+                }).then(() => this.$router.push('/')).catch(e => console.log(e))
                 }).catch(error => {
                     console.log(error);
                 })

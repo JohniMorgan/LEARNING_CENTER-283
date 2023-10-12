@@ -1,4 +1,4 @@
-import connector from "@/confaxios";
+import api from "@/confaxios";
 import { defineStore} from 'pinia';
 import { usePostsStore } from "./posts";
 import { useUserStore } from "./user";
@@ -20,7 +20,7 @@ export const useSecurityStore = defineStore('security', {
     },
     actions: {
         registryToken() {
-            connector.post('/auth/login', {
+            api.post('/auth/login', {
                 "login": "SviridenkoAdmin",
                 "password": "12345", 
               })
@@ -28,6 +28,7 @@ export const useSecurityStore = defineStore('security', {
                 this.type = response.data.type;
                 this.accessToken = response.data.accessToken;
                 this.refreshToken = response.data.refreshToken;
+                api.defaults.headers.common['Authorization'] = `${this.type} ${this.accessToken}`; 
                 const posts = usePostsStore();
                 const user = useUserStore();
                 posts.requestHowMany().then( res => {
@@ -45,13 +46,14 @@ export const useSecurityStore = defineStore('security', {
         },
         refresh() {
             setTimeout(function run(context) {
-                connector.post('auth/token', {
+                api.post('auth/token', {
                     'refreshToken': context.refreshToken
                 })
                 .then(response => {
                     response.data.refreshToken = context.refreshToken;
                     context.accessToken = response.data.accessToken;
                     context.refreshToken = response.data.refreshToken;
+                    api.defaults.headers.common['Authorization'] = `${context.type} ${context.accessToken}`;
                     setTimeout(run, 300000, context);
                 })
                 .catch(error => console.log(error));

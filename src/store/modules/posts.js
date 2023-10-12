@@ -5,7 +5,17 @@ import { useUserStore } from "./user";
 
 export const usePostsStore = defineStore('posts', {
     state: () => ({
-        posts: [],
+        posts: [/*
+        {
+            id: Идентификатор
+            title: Название 
+            date: Дата выпуска
+            likes: количество оценок
+            img: ссылка на изображение
+            text: Текст статьи
+            isLiked: Оценено ли текущим пользователем
+        }
+        */],
         howMany: 0,
         next: 0,
     }),
@@ -21,11 +31,8 @@ export const usePostsStore = defineStore('posts', {
     actions: {
         requestPosts(params) {
             if (this.next != null) {
-                const auth = useSecurityStore();
-                const token = auth.getToken;
-                api.get(`/posts/getPosts/${this.next}/${params.many}/${params.who ? params.who : -1}`, {
-                    headers: {'Authorization': `${token.type} ${token.accessToken}`},
-                }).then(response => {
+                api.get(`/posts/getPosts/${this.next}/${params.many}/${params.who ? params.who : -1}`)
+                .then(response => {
                     this.howMany -= params.many;
                     let offset = this.posts.length;
                     for (let i = 0; i < response.data.length - 1; i++) {
@@ -55,9 +62,7 @@ export const usePostsStore = defineStore('posts', {
             return new Promise((resolve, reject) => {
             const auth = useSecurityStore();
             const token = auth.getToken;
-            api.get(`/posts/downloadImage/${imgPath}`,
-            {headers: {'Authorization': `${token.type} ${token.accessToken}`}
-            })
+            api.get(`/posts/downloadImage/${imgPath}`)
             .then(response => {
                 resolve("data:image/jpg;base64, " + response.data);
     
@@ -66,22 +71,19 @@ export const usePostsStore = defineStore('posts', {
         },
         likePost(id) {
             const user = useUserStore();
-            const auth = useSecurityStore();
             const post = this.getPostById(id); 
             if (!post.isLiked) {
                 api.put('/posts/like', {
                     'post_id' : post.id,
                     'user_id' : user.getId,
-                }, {
-                    headers : {'Authorization' : `${auth.getToken.type} ${auth.getToken.accessToken}`} 
-                }).then().catch(e => console.log(e))
+                })
+                .then(/*Лайк проставлен*/)
+                .catch(e => console.log(e))
             } else {
                 api.put('/posts/unlike', {
                     'post_id' : post.id,
                     'user_id' : user.getId,
-                }, {
-                    headers : {'Authorization' : `${auth.getToken.type} ${auth.getToken.accessToken}`} 
-                }).then().catch(e => console.log(e))
+                }).then(/*Лайк убран*/).catch(e => console.log(e))
             }
         },
         convertDate(date) {
@@ -90,10 +92,8 @@ export const usePostsStore = defineStore('posts', {
         },
         requestHowMany() {
             return new Promise((resolve, reject) => {
-                const auth = useSecurityStore();
-                api.get('/posts/howMany', {
-                    headers : {'Authorization' : `${auth.getToken.type} ${auth.getToken.accessToken}`} 
-                }).then(res => {
+                api.get('/posts/howMany')
+                .then(res => {
                     this.howMany = res.data.size;
                     resolve(res.data.size);
                 }).catch(err => console.log(reject(err)));
@@ -101,10 +101,8 @@ export const usePostsStore = defineStore('posts', {
         },
         requestDelete(id) {
             return new Promise((resolve, reject) => {
-                const auth = useSecurityStore();
-                api.delete('/posts/deletePost/' + id, {
-                    headers : {'Authorization' : `${auth.getToken.type} ${auth.getToken.accessToken}`}
-                }).then(() => {
+                api.delete('/posts/deletePost/' + id)
+                .then(() => {
                     resolve("Удаление произошло успешно");
                 }).catch(err => {
                     reject({
@@ -116,13 +114,11 @@ export const usePostsStore = defineStore('posts', {
         },
         requestEdit(params) {
             return new Promise((resolve, reject) => {
-                const auth = useSecurityStore(); 
                 api.put("/posts/editPost", {
                     id: params.id,
                     text: params.text,
-                },{
-                    headers : {'Authorization' : `${auth.getToken.type} ${auth.getToken.accessToken}`}
-                }).then(() => {
+                })
+                .then(() => {
                     resolve("Текст поста успешно заменён");
                 }).catch(err => {
                     reject({
