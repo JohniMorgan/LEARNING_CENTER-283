@@ -7,14 +7,13 @@
             <label class="error-msg" v-if="isErrored">
                 {{ errMsg }}
             </label>
-            <FormInput v-for="(el, key) in info" :key="key"
+            <FormInput v-for="(el, index) in info" :key="el.name"
                 :title="el.name"
                 :value="el.value"
-                :pattern="el.pattern"
                 :type="el.type"
-                @waschanged="changeValues(key, $event)"/>
+                @waschanged="changeValues(index, $event)"/>
             <br>
-            <button class="btn btn-primary" :disabled="!bttnIsActive">
+            <button class="btn btn-primary" :disabled="!btnIsActive">
                 Войти
             </button>
             <router-link to="/registration" class="link-btn">Ещё нет аккаунта? Зарегистрируйтесь</router-link>
@@ -31,8 +30,8 @@ export default {
         FormInput,
     },
     setup() {
-        const user = useUserStore();
-        return { user };
+        const userStore = useUserStore();
+        return { userStore };
     },
     data() {
         return {
@@ -40,33 +39,25 @@ export default {
         {
             name: 'Email',
             value: '',
-            pattern: null,
             type: 'email'
         },
         {
             name: 'Пароль',
             value: '',
-            pattern: null,
             type: 'password'
         }],
             valid: [],
-            sended: false,
             errMsg: '',
     }
 },
     created() {
-        for (let i in this.info) {
-            i;
+        this.info.forEach(() => {
             this.valid.push(false);
-        }
+        })
     },
     computed: {
-        bttnIsActive() {
-            let active = true;
-            for (let i = 0; i < this.info.length; i++) {
-                active = this.valid[i] && active;
-            }
-            return active
+        btnIsActive() {
+            return this.valid.every((validValue) => validValue);
         },
         isErrored() {
             return this.errMsg != '';
@@ -79,7 +70,7 @@ export default {
             this.errMsg='';
         },
         sendForm() {
-            this.user.userAutorize({
+            this.userStore.userAutorize({
                 email: this.info[0].value,
                 word: this.info[1].value,
             }).catch(e => {

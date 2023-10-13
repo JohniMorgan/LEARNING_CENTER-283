@@ -5,8 +5,10 @@
       <p>Отменить это действие будет невозможно</p>
       <p class="msg"><slot></slot></p>
       <div>
-        <button @click="close" class="func-btn link">Отменить</button>
-        <button @click="accept" class="func-btn link">Подтвердить</button>
+        <button class="func-btn link"
+          @click="close" >Отменить</button>
+        <button class="func-btn link" 
+          @click="accept">Подтвердить</button>
     </div>
     </div>
   </div>
@@ -14,7 +16,12 @@
 
 <script>
 export default {
-  props: ['open'],
+  props: {
+    open: {
+      type: Boolean,
+      default: false
+    }
+  },
   methods: {
     close() {
       this.$emit('close');

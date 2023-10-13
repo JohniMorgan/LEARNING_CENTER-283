@@ -1,11 +1,15 @@
 <template>
     <header class="header">
-        <router-link to="/autorization" v-if="!Active" class="func-btn link">Войти</router-link>
+        <router-link to="/autorization"
+            v-if="!isActive"
+            class="func-btn link">Войти</router-link>
         <div v-else>
-        <router-link to="/add" v-if="user.isAdmin" class="func-btn link">Добавить статью</router-link>
-        <label>{{ userName }}</label>
-        <button class="func-btn link"
-            @click="leaveSite">Выйти</button>
+            <router-link to="/add"
+                v-if="userStore.isAdmin"
+                class="func-btn link">Добавить статью</router-link>
+            <label>{{ userName }}</label>
+            <button class="func-btn link"
+                @click="leaveSite">Выйти</button>
         </div>
     </header>
 </template>
@@ -17,21 +21,21 @@ import { useUserStore } from '@/store/modules/user';
 export default {
     name: "HeaderComponent",
     setup() {
-        const user = useUserStore();
-        return { user };
+        const userStore = useUserStore();
+        return { userStore };
     },
     computed: {
         userName() {
-            return this.user.getName;
+            return this.userStore.username;
         },
-        Active() {
-            return this.user.username != null;
+        isActive() {
+            return this.userStore.username != null;
         }
     },
     methods: {
         leaveSite() {
             this.$router.go(0);
-            this.user.$reset();
+            this.userStore.$reset();
         }
     },
 }

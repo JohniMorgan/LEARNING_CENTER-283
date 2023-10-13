@@ -2,26 +2,37 @@
     <div class="main-area">
         <router-link to="/" class="link-btn">На главную</router-link>
         <form class="upload-container"
-        @submit.prevent="onNewsUpload">
-        <span class="top">
-            <FileUploader 
-            :imageSrc="$route.params.image"
-            @uploaded-img="onUploadFile"/>
-            <span>
-                <label class="form-label row mb-3"><span><h3>Заголовок статьи</h3></span></label>
-                <input type="text" class="form-control" v-model="title">
+            @submit.prevent="onNewsUpload">
+            <span class="top">
+                <file-uploader 
+                    class="image-uploader"
+                    :imageSrc="$route.params.image"
+                    @uploaded-img="onUploadFile"/>
+                <span>
+                    <label class="form-label row mb-3">
+                        <span><h3>Заголовок статьи</h3></span>
+                    </label>
+                    <input type="text" class="form-control" v-model="title">
+                </span>
             </span>
-        </span>
-        <div class="row mb-3">
-            <label class="form-label row mb-3"><span><h5>Текст статьи</h5></span></label>
-            <textarea class="form-control col-12" @input="onTextInput" :value="text" :style="'height:'+areaSize"
-             v-show="!previev"></textarea>
-            <p v-if="previev" 
-            width="200" 
-            v-html="text"
-            class="text"></p>
-        </div>
-        <button class="btn btn-primary">Загрузить</button>
+            <div class="row mb-3">
+                <label class="form-label row mb-3">
+                    <span><h5>Текст статьи</h5></span>
+                </label>
+                <textarea class="form-control col-12"
+                    @input="onTextInput"
+                    :value="text" 
+                    :style="'height:'+areaSize"
+                    v-show="!preview">
+                </textarea>
+                <!--Здесь отображается текст комментария, интепретируемый как HTML-->
+                <p v-if="preview" 
+                    width="200" 
+                    v-html="text" 
+                    class="preview">
+                </p>
+            </div>
+            <button class="btn btn-primary">Загрузить</button>
         </form>
     </div>
 </template>
@@ -30,22 +41,17 @@
 import FileUploader from "./FileUploader.vue";
 
 import api from "@/confaxios";
-import { useSecurityStore } from "@/store/modules/security";
 
 export default {
     components: {
         FileUploader,
-    },
-    setup() {
-        const auth = useSecurityStore();
-        return {auth};
     },
     data() {
         return {
             uploadedFile: null,
             title: null,
             text: null,
-            previev: false,
+            preview: false,
             areaSize: '5px',
         }
     },
@@ -98,7 +104,7 @@ export default {
         transform: translate(-50%, -50%);
     }
     
-    FileUploader {
+    .img-uploader {
         float:left;
         align-self: flex-start;
     }
@@ -117,7 +123,7 @@ export default {
         border: none;
         text-decoration: none;
     }
-    .previev {
+    .preview {
         white-space: pre-wrap;
     }
 </style>

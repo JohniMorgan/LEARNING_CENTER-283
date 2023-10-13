@@ -7,35 +7,41 @@
             <span class="text" ref="text">{{ post.text }}</span>
         </p>
         <div class="toolbar">
-            <label>{{ DateOut }}</label>
+            <label>{{ dateOut }}</label>
             <button class="func-btn link"
                     v-show="!visibleComm"
                     @click="clickComments"
-                    :disabled="previevMod">
-                    <span :class="littleComent">Комментарии</span>{{ ` (${howMuchComments})` }}</button>
+                    :disabled="previewMod">
+                <span :class="littleComent">Комментарии</span>
+                {{ ` (${commentsCount})` }}
+            </button>
             <button class="func-btn link"
-                    @click="clickLike"
-                    :disabled="isDisabledLike || previevMod"><span :class="likeIcon"></span>{{` (${post.likes})`}}</button>
-            <button v-show="isOverflowed" class="func-btn link"
-                @click = "ShowMore" >Показать больше</button>
-            <div v-if="userStore.isAdmin && !previevMod">
+                @click="clickLike"
+                :disabled="isDisabledLike || previewMod">
+                <span :class="likeIcon"></span>{{` (${post.likes})`}}
+            </button>
+            <button class="func-btn link" 
+                v-show="isOverflowed" 
+                @click = "showMore" >Показать больше</button>
+            <div v-if="userStore.isAdmin && !previewMod">
                 <button class="func-btn link"
-                @click="editPost">
-                    Редактировать
-                </button>
+                    @click="editPost">Редактировать</button>
                 <button class="func-btn delete"
-                @click="openModal">Удалить</button>
+                    @click="openModal">Удалить</button>
             </div>
         </div>
     </div>
-<CommentsArea v-if="visibleComm" :postId="post.id" 
-:count="howMuchComments"
- :key="howMuchComments" @new-comment="howMuchComments++"
- @delete-comment="howMuchComments--"/>
-<!--Модальное окно которое вызывается в случае удаления поста-->
-<Modal :open="isModal" @close="closeModal" @accept="accept">
-    Пост: <b>{{ post.title }}</b>
-</Modal>
+    <comments-area v-if="visibleComm" :postId="post.id" 
+        :count="commentsCount"
+        :key="commentsCount" @new-comment="commentsCount++"
+        @delete-comment="commentsCount--"/>
+    <!--Модальное окно которое вызывается в случае удаления поста-->
+    <delete-modal-window
+        :open="isConfirmDeleteModalShown"
+        @close="closeModal"
+        @accept="accept">
+        Пост: <b>{{ post.title }}</b>
+    </delete-modal-window>
 </article>
 </template>
 
@@ -43,48 +49,53 @@
 import { usePostsStore } from '@/store/modules/posts';
 import { useUserStore } from '@/store/modules/user';
 import api from "@/confaxios";
-import { useSecurityStore } from '@/store/modules/security';
+
 import CommentsArea  from '@/components/Paper/CommentsArea.vue'
-import Modal from '@/components/Paper/ModalAskDeletePost.vue';
+import DeleteModalWindow from '@/components/Paper/ModalAskDeletePost.vue';
 
 export default {
     components: {
         CommentsArea,
-        Modal
+        DeleteModalWindow
     },
-    props: ['post'],
+    props: {
+        post: {
+            type: Object,
+            required: true,
+        }
+    },
     setup() {
         const userStore = useUserStore();
-        const posts = usePostsStore();
-        const auth = useSecurityStore();
-        return {userStore, posts, auth};
+        const postsStore = usePostsStore();
+        return {userStore, postsStore};
     },
-    data() { return {
-        overflawStyle: "height: 32vh",
-        howMuchComments: 0,
-        visibleComm: false,
-        isModal: false,
-        isOverflowed: false,
-        previevMod: false
-    }
+    data() { 
+        return {
+            overflawStyle: "height: 32vh",
+            commentsCount: 0,
+            visibleComm: false,
+            isConfirmDeleteModalShown: false,
+            isOverflowed: false,
+            previewMod: false
+        }
     },
     mounted() {
-        if (this.post.previev != undefined) this.previevMod = this.post.previev;
-        if (!this.previevMod) {
+        if (this.post.preview != undefined) this.previewMod = this.post.preview;
+        if (!this.previewMod) {
             api.get(`/comments/howMany/${this.post.id}`)
-            .then(res => {this.howMuchComments = res.data.size}).catch(e => console.log(e));
+            .then(res => {this.commentsCount = res.data.size}).catch(e => console.log(e));
         }
         this.isOverflowed = this.$refs.newstext.offsetHeight < this.$refs.newstext.scrollHeight;
     },
 
     computed: {
         isDisabledLike() {
-            return this.userStore.getId == null;
+            return this.userStore.userId == null;
         },
         likeIcon() {
             return this.post.isLiked ? "like" : "no-like";
         },
-        DateOut() {
+        dateOut() {
             let outter = this.post.date;
             if (window.innerWidth >= 700) outter = "Опубликованно " + outter;
             return outter;
@@ -95,30 +106,25 @@ export default {
         truncatedClass() {
             return this.isOverflowed ? "truncated" : "";
         },
-        havePost() {
-            return this.$refs.newstext.offsetHeight + " " + this.$refs.newstext.scrollHeight;
-        },
-        needOverflaw() {
-            return this.$refs.newstext.offsetHeight < this.$refs.newstext.scrollHeight;
-        }
     },
     methods: {
-        ShowMore() {
+        showMore() {
             this.isOverflowed = false;
             this.overflawStyle = "height: auto";
         },
         clickLike() {
-            this.posts.likePost(this.post.id);
-            this.$emit('liked', {value: this.post.id});
+            this.postsStore.likePost(this.post.id).then(() =>
+                this.$emit('liked', {value: this.post.id})
+            );
         },
         clickComments() {
             this.visibleComm = true;
         },
         openModal() {
-            this.isModal = true;
+            this.isConfirmDeleteModalShown = true;
         },
         closeModal() {
-            this.isModal = false;
+            this.isConfirmDeleteModalShown = false;
         },
         accept() {
             this.$emit('delete', {
@@ -213,5 +219,9 @@ export default {
     }
     .comment-icon {
         content: url("@/assets/comments.svg");
+    }
+
+    .overflawed {
+        height: 32vh;
     }
 </style>

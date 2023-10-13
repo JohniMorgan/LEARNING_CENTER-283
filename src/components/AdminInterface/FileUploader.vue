@@ -12,7 +12,12 @@
 
 <script>
 export default {
-    props: ["imageSrc"],
+    props: {
+        imageSrc: {
+            type: String,
+            required: true
+        }
+    },
     data() {
        return {
             image: null,

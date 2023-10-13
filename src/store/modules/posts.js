@@ -1,7 +1,7 @@
 import api from "@/confaxios";
 import { defineStore} from 'pinia';
-import { useSecurityStore } from "./security";
 import { useUserStore } from "./user";
+import { convertDate } from "@/utils/data-utils";
 
 export const usePostsStore = defineStore('posts', {
     state: () => ({
@@ -16,30 +16,25 @@ export const usePostsStore = defineStore('posts', {
             isLiked: Оценено ли текущим пользователем
         }
         */],
-        howMany: 0,
+        postsCount: 0,
         next: 0,
     }),
     getters: {
-        getAllPosts: state => {
-
-            return state.posts;
-        },
-        getPostByIndex: state => index => state.posts[index],
         getPostById: state => id => state.posts.find((el) => {return el.id == id}),
-    
     },
     actions: {
         requestPosts(params) {
+            return new Promise((resolve, reject) => {
             if (this.next != null) {
                 api.get(`/posts/getPosts/${this.next}/${params.many}/${params.who ? params.who : -1}`)
                 .then(response => {
-                    this.howMany -= params.many;
+                    this.postsCount -= params.many;
                     let offset = this.posts.length;
                     for (let i = 0; i < response.data.length - 1; i++) {
                         let p = response.data[i];
                         this.posts.push({
                                 id: p.id,
-                                date: this.convertDate(p.date),
+                                date: convertDate(p.date),
                                 likes: p.likes,
                                 title: p.title,
                                 img: null,
@@ -47,54 +42,61 @@ export const usePostsStore = defineStore('posts', {
                                 isLiked: p.isLiked
                             });
                         if (p.pathToPhoto)
-                        this.getImage(p.pathToPhoto).then(photo => {
-                            this.posts[offset + i].img = photo
-                        }).catch(e => {console.log(e);
-                            console.log("Неудачный запрос постов");    
-                        });
+                            this.getImage(p.pathToPhoto).then(photo => {
+                                this.posts[offset + i].img = photo
+                            }).catch(e => {console.log(e.error);
+                                console.log(e.msg);    
+                            });
                     }
                     this.next = response.data[response.data.length - 1].idForNext;
+                    resolve();
                 })
-                .catch(e => console.log(e));
-        }
+                .catch(e => reject(e));
+            }
+        })
         },
         getImage(imgPath) {
             return new Promise((resolve, reject) => {
-            const auth = useSecurityStore();
-            const token = auth.getToken;
             api.get(`/posts/downloadImage/${imgPath}`)
             .then(response => {
                 resolve("data:image/jpg;base64, " + response.data);
     
-            }).catch(e => reject(e));
+            }).catch(e => reject({
+                msg: "Не удалось получить фотографию",
+                error: e,
+            }));
         })
         },
         likePost(id) {
-            const user = useUserStore();
-            const post = this.getPostById(id); 
-            if (!post.isLiked) {
-                api.put('/posts/like', {
-                    'post_id' : post.id,
-                    'user_id' : user.getId,
-                })
-                .then(/*Лайк проставлен*/)
-                .catch(e => console.log(e))
-            } else {
-                api.put('/posts/unlike', {
-                    'post_id' : post.id,
-                    'user_id' : user.getId,
-                }).then(/*Лайк убран*/).catch(e => console.log(e))
-            }
-        },
-        convertDate(date) {
-            let ru_date = `${date.slice(8, 10)}.${date.slice(5, 7)}.${date.slice(0, 4)} ${Number(date.slice(11, 13)) + 3}${date.slice(13, 16)}`;
-            return ru_date;
+            const userStore = useUserStore();
+            const post = this.getPostById(id);
+            return new Promise((resolve, reject) => { 
+                if (!post.isLiked) {
+                    api.put('/posts/like', {
+                        'post_id' : post.id,
+                        'user_id' : userStore.userId,
+                    })
+                    .then(resolve("Лайк успешно поставлен"))
+                    .catch(e => reject({
+                        msg: "Не удалось поставить лайк пользователя",
+                        error: e
+                    }))
+                } else {
+                    api.put('/posts/unlike', {
+                        'post_id' : post.id,
+                        'user_id' : userStore.userId,
+                    }).then(resolve("Лайк успешно убран")).catch(e => reject({
+                        msg: "Не удалось убрать лайк пользователя",
+                        error: e
+                    }));
+                }
+            })
         },
         requestHowMany() {
             return new Promise((resolve, reject) => {
                 api.get('/posts/howMany')
                 .then(res => {
-                    this.howMany = res.data.size;
+                    this.postsCount = res.data.size;
                     resolve(res.data.size);
                 }).catch(err => console.log(reject(err)));
             })

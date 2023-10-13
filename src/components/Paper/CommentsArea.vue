@@ -1,59 +1,81 @@
 <template>
-    <section class="comment-area" :key="rerender">
-        <div class="comment" v-for="(com, index) in comments" :key="index">
-            <button v-if="user.isAdmin" class="func-btn delete"
-            @click="askDelete(index)">Удалить</button>
+    <section class="comment-area">
+        <div class="comment" v-for="(com, index) in comments" :key="com.id">
+            <button class="func-btn delete"
+                v-if="user.isAdmin" 
+                @click="askDelete(index)">Удалить</button>
             <p>{{ com.comment }}</p>
-            <span style="display: flex; justify-content: space-between; font-weight: 500;">
+            <span class="comment-title">
                 <label>{{ com.author }}</label>
                 <label>{{ com.date }}</label>
             </span>
         </div>
-        <Modal :open="deleteID != null"
-            @close="closeModal" @accept="accept">
-                Комментарий: <b>{{ comments[deleteID].comment }} </b>
-        </Modal>
-        <button class="func-btn link" @click="getComments" v-if="cnt">Ещё комментарии</button>
+        <delete-modal-window
+            :open="deleteID != null"
+            @close="closeModal"
+            @accept="accept"> Комментарий: <b>{{ comments[deleteID].comment }} </b>
+        </delete-modal-window>
+        <button class="func-btn link"
+            @click="getComments"
+            v-if="leftCommentsCount">
+            Ещё комментарии
+        </button>
         <div class="comment-edit" v-if="user.isAuthorized">
             <div class="row">
-                <textarea class="form-control col" :value="newComment"
-                @input="onInput($event.target)"></textarea>
-                <button class="send-btn" :disabled="newComment == ''"
-                @click="onSendedComment"></button>
+                <textarea class="form-control col form-area"
+                    :value="newComment"
+                    @input="onInput($event.target)">
+                </textarea>
+                <button class="send-btn"
+                    :disabled="newComment == ''"
+                    @click="onSendedComment">
+                </button>
             </div>
-            <label class="form-label "><span><b>{{ user.getName }}</b></span></label>
+            <label class="form-label ">
+                <span><b>{{ user.getName }}</b></span>
+            </label>
         </div>
     </section>
 </template>
 
 <script>
 import api from "@/confaxios"
-import { useSecurityStore } from "@/store/modules/security";
+
 import { useUserStore } from "@/store/modules/user";
 import { usePostsStore } from "@/store/modules/posts"
-import Modal from "@/components/Paper/ModalAskDeletePost.vue"
+
+import { convertDate } from "@/utils/data-utils";
+
+import DeleteModalWindow from "@/components/Paper/ModalAskDeletePost.vue"
 
 export default {
-    props: ['postId', 'count'],
+    props: {
+        postId: {
+            type: Number,
+            required: true
+        },
+        count: {
+            type: Number,
+            default: 0,
+        }
+    },
     components: {
-        Modal,
+        DeleteModalWindow,
     },
     setup() {
-        const user = useUserStore();
-        const auth = useSecurityStore();
-        const posts = usePostsStore();
-        return { user, auth, posts };
+        const userStore = useUserStore();
+        const postsStore = usePostsStore();
+        return { userStore, postsStore };
     },
     data() { return {
         comments: [],
-        cnt: 0,
+        leftCommentsCount: 0,
         offset: 0,
         newComment: '',
-        rerender: 0,
         deleteID: null,
     }},
     beforeMount() {
-        this.cnt = this.count;
+        this.leftCommentsCount = this.count;
         this.getComments();
     },
     methods: {
@@ -66,7 +88,7 @@ export default {
         },
         onSendedComment() {
             api.post('comments/addComment', {
-                userId: this.user.getId,
+                userId: this.userStore.getId,
                 postId: this.postId,
                 comment: this.newComment
             })
@@ -75,16 +97,16 @@ export default {
             }).catch(er => console.log(er));
         },
         getComments() {
-            api.get(`comments/getComments/${this.offset}/${this.cnt > 3 ? 3 : this.cnt}/` + this.postId)
+            api.get(`comments/getComments/${this.offset}/${this.leftCommentsCount > 3 ? 3 : this.leftCommentsCount}/` + this.postId)
             .then(res => {
                 let local_offset = this.comments.length;
-                this.cnt -= res.data.length-1;
+                this.leftCommentsCount -= res.data.length-1;
                 this.offset = res.data[res.data.length-1].idForNext
                 for (let i = 0; i < res.data.length-1; i++) {
                     this.comments.push({
                             id: res.data[i].id,
                             comment: res.data[i].comment,
-                            date: this.posts.convertDate(res.data[i].date),
+                            date: convertDate(res.data[i].date),
                             author: ''
                         });
                     api.get(`users/getInfo/${res.data[i].user_id}`)
@@ -95,9 +117,9 @@ export default {
             }).catch(e => console.log(e));
         },
         deleteComment(id) {
-           api.delete(`comments/deleteComment/${id}`)
-           .then(() => this.$emit("delete-comment"))
-           .catch(() => console.log("Ошибка в удалении комментария"));
+            api.delete(`comments/deleteComment/${id}`)
+            .then(() => this.$emit("delete-comment"))
+            .catch(() => console.log("Ошибка в удалении комментария"));
         },
         closeModal() {
             this.deleteID = null;
@@ -123,7 +145,7 @@ export default {
             width: 50%;
         }
     }
-    textarea {
+    .form-area {
         height: 5px;
         resize: none;
         overflow: hidden;
@@ -146,5 +168,10 @@ export default {
         word-break: break-word;
         margin-top: 1em;
         margin-bottom: 1em;
+    }
+    .comment-title {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 500;
     }
 </style>

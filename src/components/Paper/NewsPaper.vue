@@ -1,11 +1,10 @@
 <template>
-<NewsHeader/>
+<news-header/>
 <div class="paper">
-    <NewsTitle v-for="(post, index) in allPosts" :key="index"
+    <news-title v-for="post in postsStore.posts" :key="post.id"
         :post="post"
         @liked="likePost"
-        @delete="deletePost"
-    />
+        @delete="deletePost"/>
 </div>
 </template>
 
@@ -22,61 +21,57 @@ export default {
         NewsHeader,
     },
     setup() {
-        const user = useUserStore();
-        const posts = usePostsStore();
-        return {user: user,posts: posts};
-    },
-    computed: {
-        allPosts() {
-            return this.posts.posts;
-        }
+        const userStore = useUserStore();
+        const postsStore = usePostsStore();
+        return {userStore, postsStore};
     },
     methods: {
-        pushPost(post) {
-        this.posts.posts.push(new Object({
-            id: post.id,
-            isLiked: post.isLiked,
-            likes: post.likes,
-            title: post.title,
-            text: post.text,
-            img: post.img,
-            postDate: post.date
-        }))
-        },
+        /*pushPost(post) {
+            this.postsStore.posts.push({
+                id: post.id,
+                isLiked: post.isLiked,
+                likes: post.likes,
+                title: post.title,
+                text: post.text,
+                img: post.img,
+                postDate: post.date
+            });
+        },*/
         likePost(event) {
-            let key = this.posts.posts.findIndex((el) => {return el.id == event.value})    
-            this.posts.posts[key].isLiked = !this.posts.posts[key].isLiked;
-            this.posts.posts[key].likes += (this.posts.posts[key].isLiked ? 1 : -1); 
+            let key = this.postsStore.posts.findIndex((el) => {return el.id == event.value})    
+            this.postsStore.posts[key].isLiked = !this.postsStore.posts[key].isLiked;
+            this.postsStore.posts[key].likes += (this.postsStore.posts[key].isLiked ? 1 : -1); 
         },
         handleScroll() {
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
             const scrollHeight = document.documentElement.scrollHeight;
             const clientHeight = document.documentElement.clientHeight;
             if (scrollTop + clientHeight >= scrollHeight) {
-                this.posts.requestPosts({
-                    from: this.posts.next,
-                    many: (this.posts.howMany > 3) ? 3 : this.posts.howMany,
+                this.postsStore.requestPosts({
+                    from: this.postsStore.next,
+                    many: (this.postsStore.postsCount > 3) ? 3 : this.postsStore.postsCount,
                     who: this.user.userID,
                 })
             }
         },
         deletePost(event) {
-            this.posts.requestDelete(event.value).then(() => {
+            this.postsStore.requestDelete(event.value)
+            .then(() => {
                 this.$router.go(0);
-            }).catch(err => console.log(err.error));
+            }).catch(err => console.log(err.msg));
         }
     },
     beforeMount() {
-        this.posts.$reset();
+        this.postsStore.$reset();
     },
     mounted() {
-        this.posts.requestHowMany().then(() => {
-        this.posts.requestPosts({
-            many: (this.posts.howMany > 3) ? 3 : this.posts.howMany,
+        this.postsStore.requestHowMany().then(() => {
+        this.postsStore.requestPosts({
+            many: (this.postsStore.postsCount > 3) ? 3 : this.postsStore.postsCount,
             from: 0,
-            who: this.user.userId,
-        })
-    }).catch(er => {er});
+            who: this.userStore.userId,
+        }).then(console.log("Посты успешно загружены"));
+    }).catch(er => console.log(er));
         window.addEventListener('scroll', this.handleScroll);
     },
     beforeUnmount() {

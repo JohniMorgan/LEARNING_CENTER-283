@@ -29,15 +29,16 @@ export const useSecurityStore = defineStore('security', {
                 this.accessToken = response.data.accessToken;
                 this.refreshToken = response.data.refreshToken;
                 api.defaults.headers.common['Authorization'] = `${this.type} ${this.accessToken}`; 
-                const posts = usePostsStore();
-                const user = useUserStore();
-                posts.requestHowMany().then( res => {
-                    posts.requestPosts({
-                        many: (res > 3) ? 3 : posts.howMany,
-                        who: user.getId,
+                const postsStore = usePostsStore();
+                const userStore = useUserStore();
+                postsStore.requestHowMany().then( res => {
+                    postsStore.requestPosts({
+                        many: (res > 3) ? 3 : postsStore.postsCount,
+                        who: userStore.userId,
                     })
                 }
                 ).catch(err => console.log(err));
+                console.log("Токен успешно получен");
                 this.refresh();
               })
               .catch(error => {
@@ -50,6 +51,7 @@ export const useSecurityStore = defineStore('security', {
                     'refreshToken': context.refreshToken
                 })
                 .then(response => {
+                    console.log("Токен был успешно обновлён")
                     response.data.refreshToken = context.refreshToken;
                     context.accessToken = response.data.accessToken;
                     context.refreshToken = response.data.refreshToken;

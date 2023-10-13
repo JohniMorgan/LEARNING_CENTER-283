@@ -1,23 +1,30 @@
 <template>
     <div class="main-area">
         <router-link to="/" class="link-btn">На главную</router-link>
-        <section  v-show="!show">
+        <section  v-show="!showPreview">
             <span class="top">
-                <img :src="image"/>
-                <label class="form-label"><span><h1>{{ title }}</h1></span></label>
+                <img :src="image" class="preview-img"/>
+                <label class="form-label">
+                    <span><h1>{{ title }}</h1></span>
+                </label>
             </span>
             <div class="row mb-3">
-                <label class="form-label row mb-3"><span><h5>Текст статьи</h5></span></label>
-                <textarea class="form-control col-12" @input="onTextInput" :value="text"
-                ref="text"></textarea>
+                <label class="form-label row mb-3">
+                    <span><h5>Текст статьи</h5></span>
+                </label>
+                <textarea class="form-control col-12"
+                    @input="onTextInput"
+                    :value="text"
+                    ref="text">
+                </textarea>
             </div>
         </section>
-        <NewsTitle :post="simulatePost" v-if="show"/>
+        <news-title :post="simulatePost" v-if="showPreview"/>
         <div>
-                <button class="btn btn-primary"
+            <button class="btn btn-primary"
                 @click="sendEdit">Загрузить</button>
-                <button class="btn btn-primary"
-                @click="switchShow">{{ previevButtonText }}</button>
+            <button class="btn btn-primary"
+                @click="switchShow">{{ previewButtonText }}</button>
         </div>
     </div>
 </template>
@@ -36,15 +43,15 @@ export default {
             text: '',
             title: '',
             id: 0,
-            show: false,
+            showPreview: false,
         }
     },
     beforeMount() {
-        let props = this.$route.params;
-        this.image = props.image;
-        this.text = props.text;
-        this.title = props.title;
-        this.id = props.id;
+        let routeProps = this.$route.params;
+        this.image = routeProps.image;
+        this.text = routeProps.text;
+        this.title = routeProps.title;
+        this.id = routeProps.id;
     },
     mounted() {
         this.upgradeHeight();
@@ -59,11 +66,11 @@ export default {
             this.$refs.text.style.height = this.$refs.text.scrollHeight + "px";
         },
         switchShow() {
-            this.show = !this.show
+            this.showPreview = !this.showPreview
         },
         sendEdit() {
-            const post = usePostsStore();
-            post.requestEdit({
+            const postStore = usePostsStore();
+            postStore.requestEdit({
                 id: this.id,
                 text: this.text,
             }).then(this.$router.push("/"));
@@ -76,29 +83,29 @@ export default {
                 title: this.title,
                 img: this.image,
                 likes: 0,
-                previev: true,
+                preview: true,
                 date: "0001-01-01 00:00:00.344"
             }
         },
-        previevButtonText() {
-            return this.show ? "Редактировать" : "Предпросмотр"
+        previewButtonText() {
+            return this.showPreview ? "Редактировать" : "Предпросмотр"
         }
     }
 }
 </script>
 
 <style scoped>
-    button {
+    .btn {
         margin: 10px;
     }
-    img {
+    .preview-img {
         width: 300px;
         max-height: 150px;
     }
     .top {
         display: flex;
         align-content: flex-start;
-        justify-content: center;
+        justify-content: flex-start;
         flex-wrap: wrap;
     }
     .top > * {
