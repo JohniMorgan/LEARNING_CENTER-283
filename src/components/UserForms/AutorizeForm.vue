@@ -2,7 +2,7 @@
     <div class="back">
         <form class="registration-form"
             @submit.prevent = "sendForm">
-            <span class="return-btn" @click="$router.push('/')"></span>
+            <span class="return-btn"><router-link to="/"></router-link></span>
             <label style="align-self: center;">Авторизация</label>
             <label class="error-msg" v-if="isErrored">
                 {{ errMsg }}

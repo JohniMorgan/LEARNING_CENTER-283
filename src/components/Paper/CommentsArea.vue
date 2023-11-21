@@ -2,7 +2,7 @@
     <section class="comment-area">
         <div class="comment" v-for="(com, index) in comments" :key="com.id">
             <button class="func-btn delete"
-                v-if="user.isAdmin" 
+                v-if="userStore.isAdmin" 
                 @click="askDelete(index)">Удалить</button>
             <p>{{ com.comment }}</p>
             <span class="comment-title">
@@ -20,7 +20,7 @@
             v-if="leftCommentsCount">
             Ещё комментарии
         </button>
-        <div class="comment-edit" v-if="user.isAuthorized">
+        <div class="comment-edit" v-if="userStore.username != null">
             <div class="row">
                 <textarea class="form-control col form-area"
                     :value="newComment"
@@ -32,7 +32,7 @@
                 </button>
             </div>
             <label class="form-label ">
-                <span><b>{{ user.getName }}</b></span>
+                <span><b>{{ userStore.username }}</b></span>
             </label>
         </div>
     </section>
@@ -88,7 +88,7 @@ export default {
         },
         onSendedComment() {
             api.post('comments/addComment', {
-                userId: this.userStore.getId,
+                userId: this.userStore.userId,
                 postId: this.postId,
                 comment: this.newComment
             })
